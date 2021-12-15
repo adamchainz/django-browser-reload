@@ -68,7 +68,8 @@ Installation
 
    You can use another prefix if required.
 
-5. Add the template tag near the end of your base template’s closing ``</body>``:
+5. Add the template tag to your base template.
+   This can go anywhere, but it’s best just before ``</body>``:
 
    .. code-block:: html
 
@@ -80,11 +81,26 @@ Installation
         </body>
       </html>
 
+   To add django-browser-reload to Django’s admin, do so in a template called ``admin/base_site.html``:
+
+   .. code-block:: html
+
+       {% extends "admin/base_site.html" %}
+
+       {% load django_browser_reload %}
+
+       {% block extrahead %}
+           {{ block.super }}
+           {% django_browser_reload_script %}
+       {% endblock %}
+
+   This follows Django’s documentation on `extending an overriden template <https://docs.djangoproject.com/en/4.0/howto/overriding-templates/#extending-an-overridden-template>`__.
+
 All done! 📯
 
 For faster and more efficient reloading, also set up `Django’s built-in Watchman support <https://adamj.eu/tech/2021/01/20/efficient-reloading-in-djangos-runserver-with-watchman/>`__.
 
-What it does
+What It Does
 ------------
 
 When ``DEBUG`` is ``True``, the template tag includes a small script.
@@ -92,13 +108,13 @@ This script connects back to the development server and will automatically reloa
 (Template modification detection requires Django 3.2+.)
 The reload only happens in the most recently opened tab.
 
-Example app
+Example App
 -----------
 
 See the `example app <https://github.com/adamchainz/django-browser-reload/tree/main/example>`__ in the ``example/`` directory of the GitHub repository.
 Start it up, and try modifying ``example/core/views.py`` or ``templates/index.html`` to see the reloading in action.
 
-How it works
+How It Works
 ------------
 
 Here’s a diagram:
