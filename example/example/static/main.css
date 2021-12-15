@@ -1,0 +1,11 @@
+body {
+  background-color: cornsilk;
+  font-family: sans-serif;
+  text-align: center;
+  margin-top: 100px;
+  font-size: 40px;
+}
+
+.emoji {
+  font-size: 200px;
+}

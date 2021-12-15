@@ -1,0 +1,15 @@
+{% load django_browser_reload %}
+{% load static %}
+
+<html>
+  <head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+  <body>
+    <h1>{{ title }}</h1>
+
+    <h2 class="emoji">🦄</h2>
+
+    {% django_browser_reload_script %}
+  </body>
+</html>
