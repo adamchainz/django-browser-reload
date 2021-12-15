@@ -1,8 +1,9 @@
+from pathlib import Path
 from typing import Any, Dict, List
 
-SECRET_KEY = "NOTASECRET"
-
 ALLOWED_HOSTS: List[str] = []
+
+BASE_DIR = Path(__file__).resolve().parent
 
 DATABASES: Dict[str, Dict[str, Any]] = {}
 
@@ -17,10 +18,12 @@ MIDDLEWARE: List[str] = []
 
 ROOT_URLCONF = "tests.urls"
 
+SECRET_KEY = "NOTASECRET"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "OPTIONS": {"context_processors": []},
     }
 ]
