@@ -5,10 +5,13 @@ from unittest import mock
 import django
 import pytest
 from django.conf import settings
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 
 from django_browser_reload import views
 
+django_3_1_plus = pytest.mark.skipif(
+    django.VERSION < (3, 1), reason="Requires Django 3.1+"
+)
 django_3_2_plus = pytest.mark.skipif(
     django.VERSION < (3, 2), reason="Requires Django 3.2+"
 )
@@ -30,7 +33,20 @@ class TemplateChangedTests(SimpleTestCase):
         views.template_changed_event.clear()
 
 
+@override_settings(DEBUG=True)
 class EventsTests(SimpleTestCase):
+    @override_settings(DEBUG=False)
+    def test_fail_not_debug(self):
+        response = self.client.get("/__reload__/events/")
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+
+    @django_3_1_plus
+    def test_fail_not_accepted(self):
+        response = self.client.get("/__reload__/events/", HTTP_ACCEPT="text/html")
+
+        assert response.status_code == HTTPStatus.NOT_ACCEPTABLE
+
     def test_success_ping(self):
         response = self.client.get("/__reload__/events/")
 

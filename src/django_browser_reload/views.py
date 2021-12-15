@@ -1,11 +1,13 @@
 import json
+from http import HTTPStatus
 from pathlib import Path
 from threading import Event
 from typing import Any, Generator
 
 import django
+from django.conf import settings
 from django.dispatch import receiver
-from django.http import HttpRequest, StreamingHttpResponse
+from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.utils.autoreload import file_changed
 from django.utils.crypto import get_random_string
 
@@ -38,6 +40,12 @@ PING_DELAY = 1.0  # seconds
 
 
 def events(request: HttpRequest) -> StreamingHttpResponse:
+    if not settings.DEBUG:
+        raise Http404()
+
+    if django.VERSION >= (3, 1) and not request.accepts("text/event-stream"):
+        return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
+
     def event_stream() -> Generator[bytes, None, None]:
         while True:
             yield message("ping", versionId=version_id)

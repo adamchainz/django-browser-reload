@@ -37,15 +37,15 @@ Check out my book `Speed Up Your Django Tests <https://gumroad.com/l/suydt>`__ w
 Installation
 ------------
 
-You’ll need ``django.contrib.staticfiles`` in your ``INSTALLED_APPS``.
-
 1. Install with **pip**:
 
    .. code-block:: sh
 
        python -m pip install django-browser-reload
 
-2. Add django-browser-reload to your ``INSTALLED_APPS``:
+2. Ensure you have ``"django.contrib.staticfiles"`` in your ``INSTALLED_APPS``.
+
+3. Add django-browser-reload to your ``INSTALLED_APPS``:
 
    .. code-block:: python
 
@@ -55,7 +55,7 @@ You’ll need ``django.contrib.staticfiles`` in your ``INSTALLED_APPS``.
            ...,
        ]
 
-3. Include the app URL’s in your root URLconf(s):
+4. Include the app URL’s in your root URLconf(s):
 
    .. code-block:: python
 
@@ -66,18 +66,21 @@ You’ll need ``django.contrib.staticfiles`` in your ``INSTALLED_APPS``.
            path("__reload__/", include("django_browser_reload.urls")),
        ]
 
-4. Add the template tag at the end of your base template’s closing ``</body>``:
+   You can use another prefix if required.
+
+5. Add the template tag near the end of your base template’s closing ``</body>``:
 
    .. code-block:: html
 
       {% load django_browser_reload %}
 
       ...
+
           {% django_browser_reload_script %}
         </body>
       </html>
 
-Great!
+All done! 📯
 
 For faster and more efficient reloading, also set up `Django’s built-in Watchman support <https://adamj.eu/tech/2021/01/20/efficient-reloading-in-djangos-runserver-with-watchman/>`__.
 
