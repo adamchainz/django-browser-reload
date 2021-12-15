@@ -31,21 +31,21 @@ class TemplateChangedTests(SimpleTestCase):
 
 
 class EventsTests(SimpleTestCase):
-    def test_success_version_id(self):
+    def test_success_ping(self):
         response = self.client.get("/__reload__/events/")
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
         event = next(response.streaming_content)
         assert event == (
-            b'data: {"type": "version", "version": "'
-            + views.current_version.encode()
+            b'data: {"type": "ping", "versionId": "'
+            + views.version_id.encode()
             + b'"}\n\n'
         )
 
-    def test_success_version_id_twice(self):
-        with mock.patch.object(views, "VERSION_DELAY", 0.001):
-            response = self.client.get("/__reload__/events/")
+    @mock.patch.object(views, "PING_DELAY", 0.001)
+    def test_success_ping_twice(self):
+        response = self.client.get("/__reload__/events/")
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"

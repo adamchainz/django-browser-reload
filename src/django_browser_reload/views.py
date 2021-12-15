@@ -9,10 +9,10 @@ from django.http import HttpRequest, StreamingHttpResponse
 from django.utils.autoreload import file_changed
 from django.utils.crypto import get_random_string
 
-# For detecting when Python has reloaded, use a random “version” in memory.
+# For detecting when Python has reloaded, use a random version ID in memory.
 # When the worker receives a different version from the one it saw previously,
 # it reloads.
-current_version = get_random_string(length=32)
+version_id = get_random_string(32)
 
 # Communicate template changes to the running polls thread
 template_changed_event = Event()
@@ -34,15 +34,15 @@ def message(type_: str, **kwargs: Any) -> bytes:
     return f"data: {jsonified}\n\n".encode()
 
 
-VERSION_DELAY = 1.0  # seconds
+PING_DELAY = 1.0  # seconds
 
 
 def events(request: HttpRequest) -> StreamingHttpResponse:
     def event_stream() -> Generator[bytes, None, None]:
         while True:
-            yield message("version", version=current_version)
+            yield message("ping", versionId=version_id)
 
-            template_changed = template_changed_event.wait(timeout=VERSION_DELAY)
+            template_changed = template_changed_event.wait(timeout=PING_DELAY)
             if template_changed:
                 template_changed_event.clear()
                 yield message("templateChange")
