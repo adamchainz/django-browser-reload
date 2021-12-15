@@ -7,7 +7,7 @@ const defaultTimeoutMilliseconds = 100;
 let timeOutMilliseconds = defaultTimeoutMilliseconds;
 let eventSource = null;
 
-addEventListener("connect", function (event) {
+addEventListener("connect", (event) => {
   // Only keep one active port, for whichever tab was last loaded.
   if (port) {
     port.close();
@@ -17,7 +17,7 @@ addEventListener("connect", function (event) {
   port.start();
 });
 
-function receiveMessage(event) {
+const receiveMessage = (event) => {
   if (event.data.type === "initialize") {
     const givenEventsPath = event.data.eventsPath;
 
@@ -32,9 +32,9 @@ function receiveMessage(event) {
 
     eventsPath = event.data.eventsPath;
   }
-}
+};
 
-function connectToEvents() {
+const connectToEvents = () => {
   if (!eventsPath) {
     setTimeout(connectToEvents, timeOutMilliseconds);
     return;
@@ -78,4 +78,4 @@ function connectToEvents() {
     );
     setTimeout(connectToEvents, timeOutMilliseconds);
   });
-}
+};
