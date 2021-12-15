@@ -1,6 +1,6 @@
 let eventsPath = null;
 let port = null;
-let currentVersion = null;
+let currentVersionId = null;
 const defaultTimeoutMilliseconds = 100;
 let timeOutMilliseconds = defaultTimeoutMilliseconds;
 let eventSource = null;
@@ -54,14 +54,13 @@ connectToEvents = () => {
 
     const message = JSON.parse(event.data);
 
-    if (message.type == "version") {
-      if (currentVersion !== null && currentVersion !== message.version) {
+    if (message.type == "ping") {
+      if (currentVersionId !== null && currentVersionId !== message.versionId) {
         console.debug("🔁 Triggering reload.")
-        currentVersion = message.version
         port.postMessage("Reload")
       }
 
-      currentVersion = message.version;
+      currentVersionId = message.versionId;
     } else if (message.type === "templateChange") {
       port.postMessage("Reload")
     }
