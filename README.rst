@@ -86,6 +86,7 @@ What it does
 
 When ``DEBUG`` is ``True``, the template tag includes a small script.
 This script connects back to the development server and will automatically reload when ``runserver`` restarts, or a template is modified.
+(Template modification detection requires Django 3.2+.)
 The reload only happens in the most recently opened tab.
 
 Example app

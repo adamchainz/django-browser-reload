@@ -3,8 +3,10 @@ from pathlib import Path
 from threading import Event
 from typing import Any, Generator
 
+import django
+from django.dispatch import receiver
 from django.http import HttpRequest, StreamingHttpResponse
-from django.template.autoreload import get_template_directories
+from django.utils.autoreload import file_changed
 from django.utils.crypto import get_random_string
 
 # For detecting when Python has reloaded, use a random “version” in memory.
@@ -17,10 +19,14 @@ template_changed_event = Event()
 
 
 # Signal receiver connected in AppConfig.ready()
-def template_changed(*, file_path: Path, **kwargs: Any) -> None:
-    for template_dir in get_template_directories():
-        if template_dir in file_path.parents:
-            template_changed_event.set()
+if django.VERSION >= (3, 2):
+    from django.template.autoreload import get_template_directories
+
+    @receiver(file_changed)
+    def template_changed(*, file_path: Path, **kwargs: Any) -> None:
+        for template_dir in get_template_directories():
+            if template_dir in file_path.parents:
+                template_changed_event.set()
 
 
 def message(type_: str, **kwargs: Any) -> bytes:
