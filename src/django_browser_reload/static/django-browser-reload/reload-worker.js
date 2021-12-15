@@ -3,8 +3,6 @@
 let eventsPath = null;
 let port = null;
 let currentVersionId = null;
-const defaultTimeoutMilliseconds = 100;
-let timeOutMilliseconds = defaultTimeoutMilliseconds;
 let eventSource = null;
 
 addEventListener("connect", (event) => {
@@ -26,7 +24,8 @@ const receiveMessage = (event) => {
         eventSource.close();
       }
 
-      timeOutMilliseconds = defaultTimeoutMilliseconds;
+      resetConnectTimeout();
+
       setTimeout(connectToEvents, 0);
     }
 
@@ -34,9 +33,47 @@ const receiveMessage = (event) => {
   }
 };
 
+let connectAttempts;
+let connectTimeoutMs;
+
+const resetConnectTimeout = () => {
+  connectAttempts = 0;
+  connectTimeoutMs = 100;
+};
+resetConnectTimeout();
+
+const bumpConnectTimeout = () => {
+  connectAttempts++;
+
+  if (connectTimeoutMs === 100 && connectAttempts === 20) {
+    connectAttempts = 0;
+    connectTimeoutMs = 300;
+  } else if (connectTimeoutMs === 300 && connectAttempts === 20) {
+    connectAttempts = 0;
+    connectTimeoutMs = 1000;
+  } else if (connectTimeoutMs === 1000 && connectAttempts === 20) {
+    connectAttempts = 0;
+    connectTimeoutMs = 3000;
+  } else if (connectAttempts === 100) {
+    // Give up after 5 minutes.
+    console.debug(
+      "😢 django-browser-reload failed to connect after 5 minutes, shutting down."
+    );
+    close();
+    return;
+  }
+  if (connectAttempts === 0) {
+    console.debug(
+      "😅 django-browser-reload EventSource error, retrying every " +
+        connectTimeoutMs +
+        "ms"
+    );
+  }
+};
+
 const connectToEvents = () => {
   if (!eventsPath) {
-    setTimeout(connectToEvents, timeOutMilliseconds);
+    setTimeout(connectToEvents, connectTimeoutMs);
     return;
   }
 
@@ -49,7 +86,7 @@ const connectToEvents = () => {
   eventSource.addEventListener("message", (event) => {
     // Reset connection timeout when receiving a message, as it’s proof that
     // we are actually connected.
-    timeOutMilliseconds = defaultTimeoutMilliseconds;
+    resetConnectTimeout();
 
     const message = JSON.parse(event.data);
 
@@ -68,14 +105,7 @@ const connectToEvents = () => {
   eventSource.addEventListener("error", () => {
     eventSource.close();
     eventSource = null;
-    timeOutMilliseconds = Math.round(
-      Math.min(timeOutMilliseconds * 1.1, 10000)
-    );
-    console.debug(
-      "😅 django-browser-reload EventSource error, retrying in " +
-        timeOutMilliseconds +
-        "ms"
-    );
-    setTimeout(connectToEvents, timeOutMilliseconds);
+    bumpConnectTimeout();
+    setTimeout(connectToEvents, connectTimeoutMs);
   });
 };
