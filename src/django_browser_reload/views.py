@@ -34,12 +34,15 @@ def message(type_: str, **kwargs: Any) -> bytes:
     return f"data: {jsonified}\n\n".encode()
 
 
+VERSION_DELAY = 1.0  # seconds
+
+
 def events(request: HttpRequest) -> StreamingHttpResponse:
     def event_stream() -> Generator[bytes, None, None]:
         while True:
             yield message("version", version=current_version)
 
-            template_changed = template_changed_event.wait(timeout=1.0)
+            template_changed = template_changed_event.wait(timeout=VERSION_DELAY)
             if template_changed:
                 template_changed_event.clear()
                 yield message("templateChange")
