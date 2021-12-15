@@ -34,4 +34,4 @@ USE_TZ = True
 
 # django.contrib.staticfiles
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"

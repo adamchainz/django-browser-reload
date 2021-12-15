@@ -1,16 +1,22 @@
 from http import HTTPStatus
 from pathlib import Path
 
+import django
+import pytest
 from django.conf import settings
 from django.test import SimpleTestCase
 
-from django_browser_reload.views import (
-    current_version,
-    template_changed,
-    template_changed_event,
+from django_browser_reload.views import current_version, template_changed_event
+
+if django.VERSION >= (3, 2):
+    from django_browser_reload.views import template_changed
+
+django_3_2_plus = pytest.mark.skipif(
+    django.VERSION < (3, 2), reason="Requires Django 3.2+"
 )
 
 
+@django_3_2_plus
 class TemplateChangedTests(SimpleTestCase):
     def test_ignored(self):
         template_changed(file_path=Path("/tmp/nothing"))
@@ -31,7 +37,7 @@ class EventsTests(SimpleTestCase):
         response = self.client.get("/__reload__/events/")
 
         assert response.status_code == HTTPStatus.OK
-        assert response.headers["Content-Type"] == "text/event-stream"
+        assert response["Content-Type"] == "text/event-stream"
         event = next(response.streaming_content)
         assert event == (
             b'data: {"type": "version", "version": "'
@@ -44,7 +50,7 @@ class EventsTests(SimpleTestCase):
         template_changed_event.set()
 
         assert response.status_code == HTTPStatus.OK
-        assert response.headers["Content-Type"] == "text/event-stream"
+        assert response["Content-Type"] == "text/event-stream"
         # Skip version ID message
         next(response.streaming_content)
         event = next(response.streaming_content)
