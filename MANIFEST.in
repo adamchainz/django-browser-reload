@@ -10,5 +10,6 @@ include src/django_browser_reload/py.typed
 recursive-include src *.js
 exclude .editorconfig
 exclude .pre-commit-config.yaml
+exclude package.json
 include pyproject.toml
 exclude tox.ini
