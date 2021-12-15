@@ -18,7 +18,7 @@ def django_browser_reload_script() -> str:
             + ' data-events-path="{}"'
             + " async></script>"
         ),
-        static("django-browser-reload/reload.js"),
+        static("django-browser-reload/reload-listener.js"),
         static("django-browser-reload/reload-worker.js"),
         reverse("django_browser_reload:events"),
     )
