@@ -5,7 +5,7 @@ from unittest import mock
 import django
 import pytest
 from django.conf import settings
-from django.test import SimpleTestCase
+from django.test import SimpleTestCase, override_settings
 
 from django_browser_reload import views
 
@@ -30,7 +30,19 @@ class TemplateChangedTests(SimpleTestCase):
         views.template_changed_event.clear()
 
 
+@override_settings(DEBUG=True)
 class EventsTests(SimpleTestCase):
+    def test_fail_not_accepted(self):
+        response = self.client.get("/__reload__/events/", HTTP_ACCEPT="text/html")
+
+        assert response.status_code == HTTPStatus.NOT_ACCEPTABLE
+
+    @override_settings(DEBUG=False)
+    def test_fail_not_debug(self):
+        response = self.client.get("/__reload__/events/")
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+
     def test_success_ping(self):
         response = self.client.get("/__reload__/events/")
 
