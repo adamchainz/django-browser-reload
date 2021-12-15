@@ -1,3 +1,5 @@
+"use strict";
+
 let eventsPath = null;
 let port = null;
 let currentVersionId = null;
@@ -5,20 +7,17 @@ const defaultTimeoutMilliseconds = 100;
 let timeOutMilliseconds = defaultTimeoutMilliseconds;
 let eventSource = null;
 
-addEventListener(
-  'connect',
-  (event) => {
-    // Only keep one active port, for whichever tab was last loaded.
-    if (port) {
-      port.close();
-    }
-    port = event.ports[0];
-    port.addEventListener('message', receiveMessage);
-    port.start();
+addEventListener("connect", function (event) {
+  // Only keep one active port, for whichever tab was last loaded.
+  if (port) {
+    port.close();
   }
-)
+  port = event.ports[0];
+  port.addEventListener("message", receiveMessage);
+  port.start();
+});
 
-receiveMessage = (event) => {
+function receiveMessage(event) {
   if (event.data.type === "initialize") {
     const givenEventsPath = event.data.eventsPath;
 
@@ -33,9 +32,9 @@ receiveMessage = (event) => {
 
     eventsPath = event.data.eventsPath;
   }
-};
+}
 
-connectToEvents = () => {
+function connectToEvents() {
   if (!eventsPath) {
     setTimeout(connectToEvents, timeOutMilliseconds);
     return;
@@ -43,39 +42,40 @@ connectToEvents = () => {
 
   eventSource = new EventSource(eventsPath);
 
-  eventSource.addEventListener('open', (event) => {
+  eventSource.addEventListener("open", () => {
     console.debug("😎 django-browser-reload connected");
   });
 
-  eventSource.addEventListener('message', (event) => {
+  eventSource.addEventListener("message", (event) => {
     // Reset connection timeout when receiving a message, as it’s proof that
     // we are actually connected.
     timeOutMilliseconds = defaultTimeoutMilliseconds;
 
     const message = JSON.parse(event.data);
 
-    if (message.type == "ping") {
+    if (message.type === "ping") {
       if (currentVersionId !== null && currentVersionId !== message.versionId) {
-        console.debug("🔁 Triggering reload.")
-        port.postMessage("Reload")
+        console.debug("🔁 Triggering reload.");
+        port.postMessage("Reload");
       }
 
       currentVersionId = message.versionId;
     } else if (message.type === "templateChange") {
-      port.postMessage("Reload")
+      port.postMessage("Reload");
     }
-
   });
 
-  eventSource.addEventListener('error', (event) => {
-    eventSource.close()
+  eventSource.addEventListener("error", () => {
+    eventSource.close();
     eventSource = null;
-    timeOutMilliseconds = Math.round(Math.min(timeOutMilliseconds * 1.1, 10000))
+    timeOutMilliseconds = Math.round(
+      Math.min(timeOutMilliseconds * 1.1, 10000)
+    );
     console.debug(
-      "😅 django-browser-reload EventSource error, retrying in "
-      + timeOutMilliseconds
-      + "ms"
-    )
-    setTimeout(connectToEvents, timeOutMilliseconds)
+      "😅 django-browser-reload EventSource error, retrying in " +
+        timeOutMilliseconds +
+        "ms"
+    );
+    setTimeout(connectToEvents, timeOutMilliseconds);
   });
 }

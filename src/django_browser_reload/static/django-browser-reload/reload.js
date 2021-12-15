@@ -1,3 +1,5 @@
+"use strict";
+
 {
   const dataset = document.currentScript.dataset;
   const workerScriptPath = dataset.workerScriptPath;
@@ -5,15 +7,15 @@
 
   const worker = new SharedWorker(workerScriptPath);
 
-  worker.port.addEventListener('message', (event) => {
+  worker.port.addEventListener("message", (event) => {
     if (event.data === "Reload") {
-      location.reload()
+      location.reload();
     }
   });
 
   worker.port.postMessage({
-    'type': 'initialize',
-    'eventsPath': eventsPath,
+    type: "initialize",
+    eventsPath: eventsPath,
   });
 
   worker.port.start();
