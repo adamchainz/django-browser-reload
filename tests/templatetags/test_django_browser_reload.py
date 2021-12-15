@@ -17,7 +17,7 @@ class DjangoBrowserReloadScriptTests(SimpleTestCase):
             ).render(Context())
 
         assert result == (
-            '<script src="/static/django-browser-reload/reload.js"'
+            '<script src="/static/django-browser-reload/reload-listener.js"'
             + ' data-worker-script-path="/static/django-browser-reload/'
             + 'reload-worker.js"'
             + ' data-events-path="/__reload__/events/" async></script>'
