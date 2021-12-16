@@ -22,15 +22,15 @@ class TemplateChangedTests(SimpleTestCase):
     def test_ignored(self):
         views.template_changed(file_path=Path("/tmp/nothing"))
 
-        assert not views.template_changed_event.is_set()
+        assert not views.should_reload_event.is_set()
 
     def test_success(self):
         path = settings.BASE_DIR / "templates" / "example.html"
 
         views.template_changed(file_path=path)
 
-        assert views.template_changed_event.is_set()
-        views.template_changed_event.clear()
+        assert views.should_reload_event.is_set()
+        views.should_reload_event.clear()
 
 
 @override_settings(DEBUG=True)
@@ -71,7 +71,7 @@ class EventsTests(SimpleTestCase):
 
     def test_success_template_change(self):
         response = self.client.get("/__reload__/events/")
-        views.template_changed_event.set()
+        views.should_reload_event.set()
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
@@ -79,4 +79,4 @@ class EventsTests(SimpleTestCase):
         next(response.streaming_content)
         event = next(response.streaming_content)
         assert event == b'data: {"type": "templateChange"}\n\n'
-        assert not views.template_changed_event.is_set()
+        assert not views.should_reload_event.is_set()
