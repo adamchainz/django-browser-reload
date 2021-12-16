@@ -97,7 +97,7 @@ const connectToEvents = () => {
       }
 
       currentVersionId = message.versionId;
-    } else if (message.type === "templateChange") {
+    } else if (message.type === "reload") {
       port.postMessage("Reload");
     }
   });

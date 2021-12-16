@@ -1,13 +1,14 @@
 import json
+import threading
 from http import HTTPStatus
 from pathlib import Path
-from threading import Event
 from typing import Any, Generator
 
 import django
 from django.conf import settings
 from django.dispatch import receiver
 from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
+from django.http.response import HttpResponseBase
 from django.utils.autoreload import file_changed
 from django.utils.crypto import get_random_string
 
@@ -17,7 +18,7 @@ from django.utils.crypto import get_random_string
 version_id = get_random_string(32)
 
 # Communicate template changes to the running polls thread
-template_changed_event = Event()
+should_reload_event = threading.Event()
 
 
 # Signal receiver connected in AppConfig.ready()
@@ -28,10 +29,18 @@ if django.VERSION >= (3, 2):
     def template_changed(*, file_path: Path, **kwargs: Any) -> None:
         for template_dir in get_template_directories():
             if template_dir in file_path.parents:
-                template_changed_event.set()
+                should_reload_event.set()
+                break
 
 
 def message(type_: str, **kwargs: Any) -> bytes:
+    """
+    Encode an event stream message.
+
+    We distinguish message types with a 'type' inside the 'data' field, rather
+    than the 'message' field, to allow the worker to process all messages with
+    a single event listener.
+    """
     jsonified = json.dumps({"type": type_, **kwargs})
     return f"data: {jsonified}\n\n".encode()
 
@@ -39,7 +48,7 @@ def message(type_: str, **kwargs: Any) -> bytes:
 PING_DELAY = 1.0  # seconds
 
 
-def events(request: HttpRequest) -> StreamingHttpResponse:
+def events(request: HttpRequest) -> HttpResponseBase:
     if not settings.DEBUG:
         raise Http404()
 
@@ -50,10 +59,10 @@ def events(request: HttpRequest) -> StreamingHttpResponse:
         while True:
             yield message("ping", versionId=version_id)
 
-            template_changed = template_changed_event.wait(timeout=PING_DELAY)
-            if template_changed:
-                template_changed_event.clear()
-                yield message("templateChange")
+            should_reload = should_reload_event.wait(timeout=PING_DELAY)
+            if should_reload:
+                should_reload_event.clear()
+                yield message("reload")
 
     return StreamingHttpResponse(
         event_stream(),
