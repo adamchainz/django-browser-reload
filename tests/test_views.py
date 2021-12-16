@@ -78,5 +78,5 @@ class EventsTests(SimpleTestCase):
         # Skip version ID message
         next(response.streaming_content)
         event = next(response.streaming_content)
-        assert event == b'data: {"type": "templateChange"}\n\n'
+        assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
