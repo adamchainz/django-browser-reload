@@ -92,7 +92,7 @@ const connectToEvents = () => {
 
     if (message.type === "ping") {
       if (currentVersionId !== null && currentVersionId !== message.versionId) {
-        console.debug("🔁 Triggering reload.");
+        console.debug("🔁 django-browser-reload triggering reload.");
         port.postMessage("Reload");
       }
 
