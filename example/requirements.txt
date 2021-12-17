@@ -8,6 +8,10 @@ asgiref==3.4.1
     # via django
 django==3.2.7
     # via -r requirements.in
+jinja2==3.0.3
+    # via -r requirements.in
+markupsafe==2.0.1
+    # via jinja2
 pytz==2021.3
     # via django
 sqlparse==0.4.2

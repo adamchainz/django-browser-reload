@@ -69,7 +69,11 @@ Installation
    You can use another prefix if required.
 
 5. Add the template tag to your base template.
-   This can go anywhere, but it’s best just before ``</body>``:
+   This tag inserts the appropriate ``<script>`` tag when ``DEBUG`` is ``True``.
+   There are both Django templates and Jinja versions.
+
+   For **Django Templates**, load the tag and use it in your base template.
+   The tag can go anywhere, but it’s best just before ``</body>``:
 
    .. code-block:: html
 
@@ -95,6 +99,36 @@ Installation
        {% endblock %}
 
    This follows Django’s documentation on `extending an overriden template <https://docs.djangoproject.com/en/4.0/howto/overriding-templates/#extending-an-overridden-template>`__.
+
+   For **Jinja Templates**, you need to perform two steps.
+   First, load the tag function into the globals of your `custom environment <https://docs.djangoproject.com/en/stable/topics/templates/#django.template.backends.jinja2.Jinja2>`__:
+
+   .. code-block:: python
+
+       # myproject/jinja2.py
+       from jinja2 import Environment
+       from django_browser_reload.jinja import django_browser_reload_script
+
+
+       def environment(**options):
+           env = Environment(**options)
+           env.globals.update(
+               {
+                   # ...
+                   "django_browser_reload_script": django_browser_reload_script,
+               }
+           )
+           return env
+
+   Second, render the tag in your base template.
+   It can go anywhere, but it’s best just before ``</body>``:
+
+   .. code-block:: html
+
+       ...
+           {{ django_browser_reload_script() }}
+         </body>
+       </html>
 
 All done! 📯
 
