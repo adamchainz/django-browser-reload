@@ -2,15 +2,25 @@ import json
 import threading
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, Generator
+from typing import Any, Generator, Optional, Set
 
 import django
 from django.conf import settings
 from django.dispatch import receiver
 from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.http.response import HttpResponseBase
-from django.utils.autoreload import file_changed
+from django.template import engines
+from django.utils.autoreload import BaseReloader, autoreload_started, file_changed
 from django.utils.crypto import get_random_string
+
+if django.VERSION >= (3, 2):
+    from django.template.autoreload import (
+        get_template_directories as django_template_directories,
+    )
+
+    HAVE_DJANGO_TEMPLATE_DIRECTORIES = True
+else:
+    HAVE_DJANGO_TEMPLATE_DIRECTORIES = False
 
 # For detecting when Python has reloaded, use a random version ID in memory.
 # When the worker receives a different version from the one it saw previously,
@@ -21,16 +31,50 @@ version_id = get_random_string(32)
 should_reload_event = threading.Event()
 
 
-# Signal receiver connected in AppConfig.ready()
-if django.VERSION >= (3, 2):
-    from django.template.autoreload import get_template_directories
+def jinja_template_directories() -> Set[Path]:
+    from django.template.backends.jinja2 import Jinja2
 
-    @receiver(file_changed)
-    def template_changed(*, file_path: Path, **kwargs: Any) -> None:
-        for template_dir in get_template_directories():
+    cwd = Path.cwd()
+    items = set()
+    for backend in engines.all():
+        if not isinstance(backend, Jinja2):
+            continue
+
+        from jinja2 import FileSystemLoader
+
+        loader = backend.env.loader
+        if not isinstance(loader, FileSystemLoader):
+            continue
+
+        items.update([cwd / Path(fspath) for fspath in loader.searchpath])
+    return items
+
+
+# Signal receivers imported in AppConfig.ready() to ensure connected
+@receiver(autoreload_started)
+def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
+    for directory in jinja_template_directories():
+        print("Connecing", directory)
+        sender.watch_dir(directory, "**/*")
+
+
+@receiver(file_changed)
+def on_file_changed(*, file_path: Path, **kwargs: Any) -> Optional[bool]:
+    print("File path changed:", file_path)
+    # Django Templates
+    if HAVE_DJANGO_TEMPLATE_DIRECTORIES:
+        for template_dir in django_template_directories():
             if template_dir in file_path.parents:
                 should_reload_event.set()
-                break
+                return None
+
+    # Jinja Templates
+    for template_dir in jinja_template_directories():
+        if template_dir in file_path.parents:
+            should_reload_event.set()
+            return True
+
+    return None
 
 
 def message(type_: str, **kwargs: Any) -> bytes:

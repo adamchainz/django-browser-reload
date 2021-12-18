@@ -5,7 +5,7 @@ from django.shortcuts import render
 def index_django(request: HttpRequest) -> HttpResponse:
     return render(
         request,
-        "index-django.html",
+        "index.html",
         {
             "title": "Hello World",
         },
@@ -15,7 +15,7 @@ def index_django(request: HttpRequest) -> HttpResponse:
 def index_jinja(request: HttpRequest) -> HttpResponse:
     return render(
         request,
-        "index-jinja.html",
+        "index.html",
         {
             "title": "Hello World",
         },
