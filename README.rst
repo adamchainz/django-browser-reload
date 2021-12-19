@@ -139,14 +139,14 @@ What It Does
 
 When ``DEBUG`` is ``True``, the template tag includes a small script.
 This script connects back to the development server and will automatically reload when ``runserver`` restarts, or a template is modified.
-(Template modification detection requires Django 3.2+.)
+(Detecting modification of Django templates requires Django 3.2+.)
 The reload only happens in the most recently opened tab.
 
 Example App
 -----------
 
 See the `example app <https://github.com/adamchainz/django-browser-reload/tree/main/example>`__ in the ``example/`` directory of the GitHub repository.
-Start it up, and try modifying ``example/core/views.py`` or ``templates/index.html`` to see the reloading in action.
+Start it up, and try modifying ``example/core/views.py`` or ``templates/*/index.html`` to see the reloading in action.
 
 How It Works
 ------------

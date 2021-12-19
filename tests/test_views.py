@@ -1,5 +1,6 @@
 from http import HTTPStatus
 from pathlib import Path
+from typing import List, Tuple
 from unittest import mock
 
 import django
@@ -17,17 +18,40 @@ django_3_2_plus = pytest.mark.skipif(
 )
 
 
-@django_3_2_plus
-class TemplateChangedTests(SimpleTestCase):
+class OnAutoreloadStartedTests(SimpleTestCase):
+    def test_success(self):
+        calls: List[Tuple[Path, str]] = []
+
+        class FakeReloader:
+            def watch_dir(self, directory, glob):
+                calls.append((directory, glob))
+
+        reloader = FakeReloader()
+
+        views.on_autoreload_started(sender=reloader)
+
+        assert calls == [(settings.BASE_DIR / "templates" / "jinja", "**/*")]
+
+
+class OnFileChangedTests(SimpleTestCase):
     def test_ignored(self):
-        views.template_changed(file_path=Path("/tmp/nothing"))
+        views.on_file_changed(file_path=Path("/tmp/nothing"))
 
         assert not views.should_reload_event.is_set()
 
-    def test_success(self):
-        path = settings.BASE_DIR / "templates" / "example.html"
+    @django_3_2_plus
+    def test_django_template(self):
+        path = settings.BASE_DIR / "templates" / "django" / "example.html"
 
-        views.template_changed(file_path=path)
+        views.on_file_changed(file_path=path)
+
+        assert views.should_reload_event.is_set()
+        views.should_reload_event.clear()
+
+    def test_jinja_template(self):
+        path = settings.BASE_DIR / "templates" / "jinja" / "example.html"
+
+        views.on_file_changed(file_path=path)
 
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
