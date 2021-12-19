@@ -23,9 +23,13 @@ SECRET_KEY = "NOTASECRET"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [BASE_DIR / "templates" / "django"],
         "OPTIONS": {"context_processors": []},
-    }
+    },
+    {
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        "DIRS": [BASE_DIR / "templates" / "jinja"],
+    },
 ]
 
 USE_TZ = True

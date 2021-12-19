@@ -43,7 +43,7 @@ def jinja_template_directories() -> Set[Path]:
         from jinja2 import FileSystemLoader
 
         loader = backend.env.loader
-        if not isinstance(loader, FileSystemLoader):
+        if not isinstance(loader, FileSystemLoader):  # pragma: no cover
             continue
 
         items.update([cwd / Path(fspath) for fspath in loader.searchpath])
@@ -54,13 +54,11 @@ def jinja_template_directories() -> Set[Path]:
 @receiver(autoreload_started)
 def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
     for directory in jinja_template_directories():
-        print("Connecing", directory)
         sender.watch_dir(directory, "**/*")
 
 
 @receiver(file_changed)
 def on_file_changed(*, file_path: Path, **kwargs: Any) -> Optional[bool]:
-    print("File path changed:", file_path)
     # Django Templates
     if HAVE_DJANGO_TEMPLATE_DIRECTORIES:
         for template_dir in django_template_directories():
