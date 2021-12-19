@@ -22,6 +22,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 ]
 
+MIDDLEWARE = [
+    "django_browser_reload.middleware.BrowserReloadMiddleware",
+]
+
 ROOT_URLCONF = "example.urls"
 
 SECRET_KEY = "django-insecure-WCglZv2CA4v59K24bXfADwNDXc3HlwDY"

@@ -68,67 +68,21 @@ Installation
 
    You can use another prefix if required.
 
-5. Add the template tag to your base template.
-   This tag inserts the appropriate ``<script>`` tag when ``DEBUG`` is ``True``.
-   There are both Django templates and Jinja versions.
-
-   For **Django Templates**, load the tag and use it in your base template.
-   The tag can go anywhere, but it’s best just before ``</body>``:
-
-   .. code-block:: html
-
-      {% load django_browser_reload %}
-
-      ...
-
-          {% django_browser_reload_script %}
-        </body>
-      </html>
-
-   To add django-browser-reload to Django’s admin, do so in a template called ``admin/base_site.html``:
-
-   .. code-block:: html
-
-       {% extends "admin/base_site.html" %}
-
-       {% load django_browser_reload %}
-
-       {% block extrahead %}
-           {{ block.super }}
-           {% django_browser_reload_script %}
-       {% endblock %}
-
-   This follows Django’s documentation on `extending an overriden template <https://docs.djangoproject.com/en/4.0/howto/overriding-templates/#extending-an-overridden-template>`__.
-
-   For **Jinja Templates**, you need to perform two steps.
-   First, load the tag function into the globals of your `custom environment <https://docs.djangoproject.com/en/stable/topics/templates/#django.template.backends.jinja2.Jinja2>`__:
+5. Add the middleware:
 
    .. code-block:: python
 
-       # myproject/jinja2.py
-       from jinja2 import Environment
-       from django_browser_reload.jinja import django_browser_reload_script
+      MIDDLEWARE = [
+          # ...
+          "django_browser_reload.middleware.BrowserReloadMiddleware",
+          # ...
+      ]
 
+   The middleware should be listed after any that encode the response, such as Django’s ``GZipMiddleware``.
 
-       def environment(**options):
-           env = Environment(**options)
-           env.globals.update(
-               {
-                   # ...
-                   "django_browser_reload_script": django_browser_reload_script,
-               }
-           )
-           return env
-
-   Second, render the tag in your base template.
-   It can go anywhere, but it’s best just before ``</body>``:
-
-   .. code-block:: html
-
-       ...
-           {{ django_browser_reload_script() }}
-         </body>
-       </html>
+   The middleware automatically inserts the required script tag on HTML responses when ``DEBUG`` is ``True``.
+   It does so to every HTML response, meaning it will be included on Django’s debug pages, admin pages, etc.
+   If you want more control, you can instead insert the script tag in your templates—see below.
 
 All done! 📯
 
@@ -147,6 +101,72 @@ Example App
 
 See the `example app <https://github.com/adamchainz/django-browser-reload/tree/main/example>`__ in the ``example/`` directory of the GitHub repository.
 Start it up, and try modifying ``example/core/views.py`` or ``templates/*/index.html`` to see the reloading in action.
+
+Template Tag
+------------
+
+If the middleware doesn’t work for you, you can also use a template tag to insert the script on relevant pages.
+The template tag has both Django templates and Jinja versions, and only outputs the script tag when ``DEBUG`` is ``True``.
+
+For **Django Templates**, load the tag and use it in your base template.
+The tag can go anywhere, but it’s best just before ``</body>``:
+
+.. code-block:: html
+
+   {% load django_browser_reload %}
+
+   ...
+
+       {% django_browser_reload_script %}
+     </body>
+   </html>
+
+To add django-browser-reload to Django’s admin, do so in a template called ``admin/base_site.html``:
+
+.. code-block:: html
+
+    {% extends "admin/base_site.html" %}
+
+    {% load django_browser_reload %}
+
+    {% block extrahead %}
+        {{ block.super }}
+        {% django_browser_reload_script %}
+    {% endblock %}
+
+This follows Django’s documentation on `extending an overriden template <https://docs.djangoproject.com/en/4.0/howto/overriding-templates/#extending-an-overridden-template>`__.
+
+For **Jinja Templates**, you need to perform two steps.
+First, load the tag function into the globals of your `custom environment <https://docs.djangoproject.com/en/stable/topics/templates/#django.template.backends.jinja2.Jinja2>`__:
+
+.. code-block:: python
+
+    # myproject/jinja2.py
+    from jinja2 import Environment
+    from django_browser_reload.jinja import django_browser_reload_script
+
+
+    def environment(**options):
+        env = Environment(**options)
+        env.globals.update(
+            {
+                # ...
+                "django_browser_reload_script": django_browser_reload_script,
+            }
+        )
+        return env
+
+Second, render the tag in your base template.
+It can go anywhere, but it’s best just before ``</body>``:
+
+.. code-block:: html
+
+    ...
+        {{ django_browser_reload_script() }}
+      </body>
+    </html>
+
+Ta-da!
 
 How It Works
 ------------
