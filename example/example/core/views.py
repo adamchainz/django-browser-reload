@@ -7,7 +7,7 @@ def index_django(request: HttpRequest) -> HttpResponse:
         request,
         "index.html",
         {
-            "title": "Hello World",
+            "title": "My Awesome Site",
         },
     )
 
@@ -17,7 +17,7 @@ def index_jinja(request: HttpRequest) -> HttpResponse:
         request,
         "index.html",
         {
-            "title": "Hello World",
+            "title": "My Awesome Site",
         },
         using="jinja2",
     )
