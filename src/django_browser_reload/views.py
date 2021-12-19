@@ -6,6 +6,11 @@ from typing import Any, Generator, Optional, Set
 
 import django
 from django.conf import settings
+from django.contrib.staticfiles.finders import (
+    AppDirectoriesFinder,
+    FileSystemFinder,
+    get_finders,
+)
 from django.dispatch import receiver
 from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.http.response import HttpResponseBase
@@ -55,6 +60,14 @@ def jinja_template_directories() -> Set[Path]:
 def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
     for directory in jinja_template_directories():
         sender.watch_dir(directory, "**/*")
+
+    for finder in get_finders():
+        if not isinstance(
+            finder, (AppDirectoriesFinder, FileSystemFinder)
+        ):  # pragma: no cover
+            continue
+        for storage in finder.storages.values():
+            sender.watch_dir(Path(storage.location), "**/*")
 
 
 @receiver(file_changed)

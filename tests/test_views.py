@@ -8,6 +8,7 @@ import pytest
 from django.conf import settings
 from django.test import SimpleTestCase, override_settings
 
+import django_browser_reload
 from django_browser_reload import views
 
 django_3_1_plus = pytest.mark.skipif(
@@ -30,7 +31,11 @@ class OnAutoreloadStartedTests(SimpleTestCase):
 
         views.on_autoreload_started(sender=reloader)
 
-        assert calls == [(settings.BASE_DIR / "templates" / "jinja", "**/*")]
+        assert calls == [
+            (settings.BASE_DIR / "templates" / "jinja", "**/*"),
+            (settings.BASE_DIR / "static", "**/*"),
+            (Path(django_browser_reload.__file__).parent / "static", "**/*"),
+        ]
 
 
 class OnFileChangedTests(SimpleTestCase):
