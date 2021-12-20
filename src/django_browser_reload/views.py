@@ -15,6 +15,7 @@ from django.dispatch import receiver
 from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.http.response import HttpResponseBase
 from django.template import engines
+from django.template.backends.base import BaseEngine
 from django.utils.autoreload import BaseReloader, autoreload_started, file_changed
 from django.utils.crypto import get_random_string
 
@@ -37,12 +38,10 @@ should_reload_event = threading.Event()
 
 
 def jinja_template_directories() -> Set[Path]:
-    from django.template.backends.jinja2 import Jinja2
-
     cwd = Path.cwd()
     items = set()
     for backend in engines.all():
-        if not isinstance(backend, Jinja2):
+        if not _is_jinja_backend(backend):
             continue
 
         from jinja2 import FileSystemLoader
@@ -53,6 +52,16 @@ def jinja_template_directories() -> Set[Path]:
 
         items.update([cwd / Path(fspath) for fspath in loader.searchpath])
     return items
+
+
+def _is_jinja_backend(backend: BaseEngine) -> bool:
+    """
+    Cautious check for Jinja backend, avoiding import which relies on jinja2
+    """
+    return any(
+        f"{c.__module__}.{c.__qualname__}" == "django.template.backends.jinja2.Jinja2"
+        for c in backend.__class__.__mro__
+    )
 
 
 # Signal receivers imported in AppConfig.ready() to ensure connected
