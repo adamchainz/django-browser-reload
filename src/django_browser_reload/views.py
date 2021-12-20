@@ -56,7 +56,7 @@ def jinja_template_directories() -> Set[Path]:
 
 
 # Signal receivers imported in AppConfig.ready() to ensure connected
-@receiver(autoreload_started)
+@receiver(autoreload_started, dispatch_uid="browser_reload")
 def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
     for directory in jinja_template_directories():
         sender.watch_dir(directory, "**/*")
@@ -70,7 +70,7 @@ def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
             sender.watch_dir(Path(storage.location), "**/*")
 
 
-@receiver(file_changed)
+@receiver(file_changed, dispatch_uid="browser_reload")
 def on_file_changed(*, file_path: Path, **kwargs: Any) -> Optional[bool]:
     # Django Templates
     if HAVE_DJANGO_TEMPLATE_DIRECTORIES:
