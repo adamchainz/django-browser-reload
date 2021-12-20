@@ -2,6 +2,9 @@
 History
 =======
 
+1.1.0 (2021-12-20)
+------------------
+
 * Provide a middleware to insert the script tag.
   This is now the recommended method for doing the insertion, as it automatically applies to all HTML responses.
   This includes Django’s debug page, so you can automatically reload after fixing an exception.
