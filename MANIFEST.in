@@ -1,15 +1,15 @@
 global-exclude *.py[cod]
-prune tests
 prune __pycache__
 prune example
 prune requirements
-include HISTORY.rst
-include LICENSE
-include README.rst
-include src/django_browser_reload/py.typed
-recursive-include src *.js
+prune tests
 exclude .editorconfig
 exclude .pre-commit-config.yaml
 exclude package.json
-include pyproject.toml
 exclude tox.ini
+include HISTORY.rst
+include LICENSE
+include pyproject.toml
+include README.rst
+include src/*/py.typed
+recursive-include src *.js
