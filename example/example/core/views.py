@@ -21,3 +21,14 @@ def index_jinja(request: HttpRequest) -> HttpResponse:
         },
         using="jinja2",
     )
+
+
+def favicon(request: HttpRequest) -> HttpResponse:
+    return HttpResponse(
+        (
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">'
+            + '<text y=".9em" font-size="90">🔁</text>'
+            + "</svg>"
+        ),
+        content_type="image/svg+xml",
+    )
