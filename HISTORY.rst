@@ -2,6 +2,8 @@
 History
 =======
 
+* Use 'defer' in the ``<script>`` tag to avoid blocking HTML parsing.
+
 1.1.0 (2021-12-20)
 ------------------
 

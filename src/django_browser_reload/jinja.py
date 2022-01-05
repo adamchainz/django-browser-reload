@@ -12,7 +12,7 @@ def django_browser_reload_script() -> str:
             '<script src="{}"'
             + ' data-worker-script-path="{}"'
             + ' data-events-path="{}"'
-            + " async></script>"
+            + " defer></script>"
         ),
         static("django-browser-reload/reload-listener.js"),
         static("django-browser-reload/reload-worker.js"),
