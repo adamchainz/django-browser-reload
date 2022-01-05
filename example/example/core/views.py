@@ -1,7 +1,9 @@
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
+from django.views.decorators.http import require_GET
 
 
+@require_GET
 def index_django(request: HttpRequest) -> HttpResponse:
     return render(
         request,
@@ -12,6 +14,7 @@ def index_django(request: HttpRequest) -> HttpResponse:
     )
 
 
+@require_GET
 def index_jinja(request: HttpRequest) -> HttpResponse:
     return render(
         request,
@@ -23,6 +26,7 @@ def index_jinja(request: HttpRequest) -> HttpResponse:
     )
 
 
+@require_GET
 def favicon(request: HttpRequest) -> HttpResponse:
     return HttpResponse(
         (
