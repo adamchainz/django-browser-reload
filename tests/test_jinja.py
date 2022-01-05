@@ -17,5 +17,5 @@ class DjangoBrowserReloadScriptTests(SimpleTestCase):
             '<script src="/static/django-browser-reload/reload-listener.js"'
             + ' data-worker-script-path="/static/django-browser-reload/'
             + 'reload-worker.js"'
-            + ' data-events-path="/__reload__/events/" async></script>'
+            + ' data-events-path="/__reload__/events/" defer></script>'
         )

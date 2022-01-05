@@ -66,7 +66,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
             + b'<script src="/static/django-browser-reload/reload-listener.js"'
             + b' data-worker-script-path="/static/django-browser-reload/'
             + b'reload-worker.js"'
-            + b' data-events-path="/__reload__/events/" async></script>'
+            + b' data-events-path="/__reload__/events/" defer></script>'
             + b"</body></html>"
         )
 
@@ -80,7 +80,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
             + b'<script src="/static/django-browser-reload/reload-listener.js"'
             + b' data-worker-script-path="/static/django-browser-reload/'
             + b'reload-worker.js"'
-            + b' data-events-path="/__reload__/events/" async></script>'
+            + b' data-events-path="/__reload__/events/" defer></script>'
             + b"</body></html>"
         )
 
@@ -94,6 +94,6 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
             + b'<script src="/static/django-browser-reload/reload-listener.js"'
             + b' data-worker-script-path="/static/django-browser-reload/'
             + b'reload-worker.js"'
-            + b' data-events-path="/__reload__/events/" async></script>'
+            + b' data-events-path="/__reload__/events/" defer></script>'
             + b"</body></html>"
         )
