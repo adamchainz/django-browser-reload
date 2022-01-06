@@ -80,7 +80,7 @@ Installation
 
    The middleware should be listed after any that encode the response, such as Django’s ``GZipMiddleware``.
 
-   The middleware automatically inserts the required script tag on HTML responses when ``DEBUG`` is ``True``.
+   The middleware automatically inserts the required script tag on HTML responses before ``</body>`` when ``DEBUG`` is ``True``.
    It does so to every HTML response, meaning it will be included on Django’s debug pages, admin pages, etc.
    If you want more control, you can instead insert the script tag in your templates—see below.
 
