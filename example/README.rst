@@ -1,5 +1,5 @@
-Example Application
-===================
+Example Project
+===============
 
 Use Python 3.10 to set up and run with these commands:
 

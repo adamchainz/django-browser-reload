@@ -96,11 +96,11 @@ This script connects back to the development server and will automatically reloa
 (Detecting modification of Django templates requires Django 3.2+.)
 The reload only happens in the most recently opened tab.
 
-Example App
+Example Project
 -----------
 
-See the `example app <https://github.com/adamchainz/django-browser-reload/tree/main/example>`__ in the ``example/`` directory of the GitHub repository.
-Start it up, and try modifying ``example/core/views.py`` or ``templates/*/index.html`` to see the reloading in action.
+See the `example project <https://github.com/adamchainz/django-browser-reload/tree/main/example>`__ in the ``example/`` directory of the GitHub repository.
+Start it up and modify its files to see the reloading in action.
 
 Template Tag
 ------------
