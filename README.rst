@@ -29,8 +29,9 @@ Django 2.2 to 4.0 supported.
 
 ----
 
-**Are your tests slow?**
-Check out my book `Speed Up Your Django Tests <https://gumroad.com/l/suydt>`__ which covers loads of best practices so you can write faster, more accurate tests.
+**Want to work smarter and faster?**
+Check out my book `Boost Your Django DX <https://adamchainz.gumroad.com/l/byddx>`__ which covers django-browser-reload and many other tools.
+I wrote django-browser-reload whilst working on the book!
 
 ----
 
