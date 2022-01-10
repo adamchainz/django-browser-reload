@@ -11,6 +11,7 @@ from django.contrib.staticfiles.finders import (
     FileSystemFinder,
     get_finders,
 )
+from django.core.files.storage import Storage
 from django.dispatch import receiver
 from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.http.response import HttpResponseBase
@@ -64,33 +65,45 @@ def _is_jinja_backend(backend: BaseEngine) -> bool:
     )
 
 
+def static_finder_storages() -> Generator[Storage, None, None]:
+    for finder in get_finders():
+        if not isinstance(
+            finder, (AppDirectoriesFinder, FileSystemFinder)
+        ):  # pragma: no cover
+            continue
+        yield from finder.storages.values()
+
+
 # Signal receivers imported in AppConfig.ready() to ensure connected
 @receiver(autoreload_started, dispatch_uid="browser_reload")
 def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
     for directory in jinja_template_directories():
         sender.watch_dir(directory, "**/*")
 
-    for finder in get_finders():
-        if not isinstance(
-            finder, (AppDirectoriesFinder, FileSystemFinder)
-        ):  # pragma: no cover
-            continue
-        for storage in finder.storages.values():
-            sender.watch_dir(Path(storage.location), "**/*")
+    for storage in static_finder_storages():
+        sender.watch_dir(Path(storage.location), "**/*")
 
 
 @receiver(file_changed, dispatch_uid="browser_reload")
 def on_file_changed(*, file_path: Path, **kwargs: Any) -> Optional[bool]:
+    # Returning True tells Django *not* to reload
+
     # Django Templates
     if HAVE_DJANGO_TEMPLATE_DIRECTORIES:
         for template_dir in django_template_directories():
             if template_dir in file_path.parents:
                 should_reload_event.set()
-                return None
+                return True
 
     # Jinja Templates
     for template_dir in jinja_template_directories():
         if template_dir in file_path.parents:
+            should_reload_event.set()
+            return True
+
+    # Static assets
+    for storage in static_finder_storages():
+        if Path(storage.location) in file_path.parents:
             should_reload_event.set()
             return True
 

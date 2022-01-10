@@ -48,16 +48,27 @@ class OnFileChangedTests(SimpleTestCase):
     def test_django_template(self):
         path = settings.BASE_DIR / "templates" / "django" / "example.html"
 
-        views.on_file_changed(file_path=path)
+        result = views.on_file_changed(file_path=path)
 
+        assert result is True
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
 
     def test_jinja_template(self):
         path = settings.BASE_DIR / "templates" / "jinja" / "example.html"
 
-        views.on_file_changed(file_path=path)
+        result = views.on_file_changed(file_path=path)
 
+        assert result is True
+        assert views.should_reload_event.is_set()
+        views.should_reload_event.clear()
+
+    def test_static_asset(self):
+        path = settings.BASE_DIR / "static" / "example.css"
+
+        result = views.on_file_changed(file_path=path)
+
+        assert result is True
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
 

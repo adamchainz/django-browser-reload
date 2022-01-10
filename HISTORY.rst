@@ -2,6 +2,10 @@
 History
 =======
 
+* Prevent restarting the server when static assets change.
+
+  Thanks to Tim Kamanin for the report in `Issue #46 <https://github.com/adamchainz/django-browser-reload/issues/46>`__.
+
 * Use 'defer' in the ``<script>`` tag to avoid blocking HTML parsing.
 
 1.1.0 (2021-12-20)
