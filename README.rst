@@ -98,7 +98,7 @@ This script connects back to the development server and will automatically reloa
 The reload only happens in the most recently opened tab.
 
 Example Project
------------
+---------------
 
 See the `example project <https://github.com/adamchainz/django-browser-reload/tree/main/example>`__ in the ``example/`` directory of the GitHub repository.
 Start it up and modify its files to see the reloading in action.
