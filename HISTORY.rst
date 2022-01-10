@@ -2,6 +2,9 @@
 History
 =======
 
+1.1.1 (2022-01-10)
+------------------
+
 * Prevent restarting the server when static assets change.
 
   Thanks to Tim Kamanin for the report in `Issue #46 <https://github.com/adamchainz/django-browser-reload/issues/46>`__.
