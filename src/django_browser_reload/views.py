@@ -2,7 +2,7 @@ import json
 import threading
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, Generator, Optional, Set
+from typing import Any, Generator, Optional, Set, Union
 
 import django
 from django.conf import settings
@@ -36,6 +36,19 @@ version_id = get_random_string(32)
 
 # Communicate template changes to the running polls thread
 should_reload_event = threading.Event()
+
+reload_timer: Union[threading.Timer, None] = None
+
+RELOAD_DEBOUNCE_TIME = 0.05  # seconds
+
+
+def trigger_reload_soon() -> None:
+    global reload_timer
+    if reload_timer is not None:
+        reload_timer.cancel()
+
+    reload_timer = threading.Timer(RELOAD_DEBOUNCE_TIME, should_reload_event.set)
+    reload_timer.start()
 
 
 def jinja_template_directories() -> Set[Path]:
@@ -94,19 +107,19 @@ def on_file_changed(*, file_path: Path, **kwargs: Any) -> Optional[bool]:
     if HAVE_DJANGO_TEMPLATE_DIRECTORIES:
         for template_dir in django_template_directories():
             if template_dir in file_parents:
-                should_reload_event.set()
+                trigger_reload_soon()
                 return True
 
     # Jinja Templates
     for template_dir in jinja_template_directories():
         if template_dir in file_parents:
-            should_reload_event.set()
+            trigger_reload_soon()
             return True
 
     # Static assets
     for storage in static_finder_storages():
         if Path(storage.location) in file_parents:
-            should_reload_event.set()
+            trigger_reload_soon()
             return True
 
     return None

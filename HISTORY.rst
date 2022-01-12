@@ -2,6 +2,10 @@
 History
 =======
 
+* “Debounce” reload events with a 50 millisecond window.
+  This fixes an issue with repeat triggers of the same reload event.
+  It should also help workflows where several files change in quick succession.
+
 1.2.0 (2022-01-10)
 ------------------
 
