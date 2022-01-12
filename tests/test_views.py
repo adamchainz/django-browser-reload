@@ -1,3 +1,4 @@
+import time
 from http import HTTPStatus
 from pathlib import Path
 from typing import List, Tuple
@@ -42,6 +43,7 @@ class OnFileChangedTests(SimpleTestCase):
     def test_ignored(self):
         views.on_file_changed(file_path=Path("/tmp/nothing"))
 
+        time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
         assert not views.should_reload_event.is_set()
 
     @django_3_2_plus
@@ -50,6 +52,7 @@ class OnFileChangedTests(SimpleTestCase):
 
         result = views.on_file_changed(file_path=path)
 
+        time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
         assert result is True
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
@@ -59,6 +62,7 @@ class OnFileChangedTests(SimpleTestCase):
 
         result = views.on_file_changed(file_path=path)
 
+        time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
         assert result is True
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
@@ -68,6 +72,7 @@ class OnFileChangedTests(SimpleTestCase):
 
         result = views.on_file_changed(file_path=path)
 
+        time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
         assert result is True
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
