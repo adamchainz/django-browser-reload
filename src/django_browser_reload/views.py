@@ -2,7 +2,7 @@ import json
 import threading
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, Generator, Optional, Set
+from typing import Any, Generator, Optional, Set, Union
 
 import django
 from django.conf import settings
@@ -37,7 +37,7 @@ version_id = get_random_string(32)
 # Communicate template changes to the running polls thread
 should_reload_event = threading.Event()
 
-reload_timer: threading.Timer | None = None
+reload_timer: Union[threading.Timer, None] = None
 
 RELOAD_DEBOUNCE_TIME = 0.05  # seconds
 
