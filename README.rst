@@ -27,6 +27,13 @@ Python 3.7 to 3.10 supported.
 
 Django 2.2 to 4.0 supported.
 
+Your browser needs to support:
+
+* ``EventSource`` - `universally available <https://developer.mozilla.org/en-US/docs/Web/API/EventSource#browser_compatibility>`__.
+
+* ``SharedWorker`` - `available <https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker#browser_compatibility>`__ on Chrome, Edge, Firefox, and Opera.
+  Safari removed support but `may reinstate it <https://bugs.webkit.org/show_bug.cgi?id=149850>`__.
+
 ----
 
 **Want to work smarter and faster?**
@@ -219,9 +226,3 @@ When the server restarts, the worker’s ``EventSource`` reconnects with minimal
 On connection, the events view sends the version ID, which the worker sees as different, so it triggers a reload.
 
 The events view also sends the version ID every second to keep the connection alive.
-
-Compatibility
--------------
-
-``EventSource`` is `highly compatible <https://developer.mozilla.org/en-US/docs/Web/API/EventSource#browser_compatibility>`__.
-``SharedWorker`` is `a bit less so <https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker#browser_compatibility>`__, but should work with Chrome, Edge, Firefox, and Opera.
