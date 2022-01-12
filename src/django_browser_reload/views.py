@@ -88,22 +88,24 @@ def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
 def on_file_changed(*, file_path: Path, **kwargs: Any) -> Optional[bool]:
     # Returning True tells Django *not* to reload
 
+    file_parents = file_path.parents
+
     # Django Templates
     if HAVE_DJANGO_TEMPLATE_DIRECTORIES:
         for template_dir in django_template_directories():
-            if template_dir in file_path.parents:
+            if template_dir in file_parents:
                 should_reload_event.set()
                 return True
 
     # Jinja Templates
     for template_dir in jinja_template_directories():
-        if template_dir in file_path.parents:
+        if template_dir in file_parents:
             should_reload_event.set()
             return True
 
     # Static assets
     for storage in static_finder_storages():
-        if Path(storage.location) in file_path.parents:
+        if Path(storage.location) in file_parents:
             should_reload_event.set()
             return True
 
