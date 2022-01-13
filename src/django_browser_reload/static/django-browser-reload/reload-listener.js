@@ -8,7 +8,9 @@
   if (!window.SharedWorker) {
     console.debug("😭 django-browser-reload cannot work in this browser.");
   } else {
-    const worker = new SharedWorker(workerScriptPath);
+    const worker = new SharedWorker(workerScriptPath, {
+      name: "django-browser-reload",
+    });
 
     worker.port.addEventListener("message", (event) => {
       if (event.data === "Reload") {
