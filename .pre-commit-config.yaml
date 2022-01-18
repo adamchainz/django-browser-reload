@@ -21,7 +21,7 @@ repos:
         - css
         - javascript
 - repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v8.6.0
+  rev: v8.7.0
   hooks:
   - id: eslint
     args:
