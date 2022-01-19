@@ -1,11 +1,13 @@
-from pathlib import Path
-from typing import Any, Dict, List
+from __future__ import annotations
 
-ALLOWED_HOSTS: List[str] = []
+from pathlib import Path
+from typing import Any
+
+ALLOWED_HOSTS: list[str] = []
 
 BASE_DIR = Path(__file__).resolve().parent
 
-DATABASES: Dict[str, Dict[str, Any]] = {}
+DATABASES: dict[str, dict[str, Any]] = {}
 
 INSTALLED_APPS = [
     # Third Party
@@ -14,7 +16,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 ]
 
-MIDDLEWARE: List[str] = []
+MIDDLEWARE: list[str] = []
 
 ROOT_URLCONF = "tests.urls"
 

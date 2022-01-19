@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import json
 import threading
 from http import HTTPStatus
 from pathlib import Path
-from typing import Any, Generator, Optional, Set, Union
+from typing import Any, Generator
 
 import django
 from django.conf import settings
@@ -37,7 +39,7 @@ version_id = get_random_string(32)
 # Communicate template changes to the running polls thread
 should_reload_event = threading.Event()
 
-reload_timer: Union[threading.Timer, None] = None
+reload_timer: threading.Timer | None = None
 
 RELOAD_DEBOUNCE_TIME = 0.05  # seconds
 
@@ -51,7 +53,7 @@ def trigger_reload_soon() -> None:
     reload_timer.start()
 
 
-def jinja_template_directories() -> Set[Path]:
+def jinja_template_directories() -> set[Path]:
     cwd = Path.cwd()
     items = set()
     for backend in engines.all():
@@ -98,7 +100,7 @@ def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
 
 
 @receiver(file_changed, dispatch_uid="browser_reload")
-def on_file_changed(*, file_path: Path, **kwargs: Any) -> Optional[bool]:
+def on_file_changed(*, file_path: Path, **kwargs: Any) -> bool | None:
     # Returning True tells Django *not* to reload
 
     file_parents = file_path.parents

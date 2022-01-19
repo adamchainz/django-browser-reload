@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from django.test import RequestFactory, SimpleTestCase, override_settings
 

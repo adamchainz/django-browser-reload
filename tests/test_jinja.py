@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.test import SimpleTestCase, override_settings
 
 from django_browser_reload.jinja import django_browser_reload_script

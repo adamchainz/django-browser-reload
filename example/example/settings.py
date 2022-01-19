@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 # 1. Django Core Settings
 
@@ -9,7 +11,7 @@ ALLOWED_HOSTS = ["*"]
 
 BASE_DIR = Path(__file__).resolve().parent
 
-DATABASES: Dict[str, Dict[str, Any]] = {}
+DATABASES: dict[str, dict[str, Any]] = {}
 
 DEBUG = os.environ.get("DEBUG", "") == "1"
 
