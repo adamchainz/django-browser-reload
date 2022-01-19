@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import time
 from http import HTTPStatus
 from pathlib import Path
-from typing import List, Tuple
 from unittest import mock
 
 import django
@@ -22,7 +23,7 @@ django_3_2_plus = pytest.mark.skipif(
 
 class OnAutoreloadStartedTests(SimpleTestCase):
     def test_success(self):
-        calls: List[Tuple[Path, str]] = []
+        calls: list[tuple[Path, str]] = []
 
         class FakeReloader:
             def watch_dir(self, directory, glob):
