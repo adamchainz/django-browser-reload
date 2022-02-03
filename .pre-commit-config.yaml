@@ -19,14 +19,12 @@ repos:
     - id: prettier
       types_or:
         - css
-        - javascript
-- repo: https://github.com/pre-commit/mirrors-eslint
-  rev: v8.8.0
+- repo: https://github.com/standard/standard
+  rev: v17.0.0-1
   hooks:
-  - id: eslint
-    args:
-    - --config=package.json
-    - --fix
+    - id: standard
+      args:
+      - --env=browser
 - repo: https://github.com/asottile/pyupgrade
   rev: v2.31.0
   hooks:
