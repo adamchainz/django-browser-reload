@@ -20,7 +20,7 @@ repos:
       types_or:
         - css
 - repo: https://github.com/standard/standard
-  rev: v17.0.0-1
+  rev: v17.0.0-2
   hooks:
     - id: standard
       args:
