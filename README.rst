@@ -32,7 +32,7 @@ Your browser needs to support:
 * ``EventSource`` - `universally available <https://developer.mozilla.org/en-US/docs/Web/API/EventSource#browser_compatibility>`__.
 
 * ``SharedWorker`` - `available <https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker#browser_compatibility>`__ on Chrome, Edge, Firefox, and Opera.
-  Safari removed support but `may reinstate it <https://bugs.webkit.org/show_bug.cgi?id=149850>`__.
+  Safari removed support but `are reinstating it <https://bugs.webkit.org/show_bug.cgi?id=149850>`__ - they recently `merged the feature <https://twitter.com/chris_dumez/status/1491650913441701896>`__ (2022-02-10).
 
 ----
 
