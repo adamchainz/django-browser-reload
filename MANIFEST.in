@@ -1,12 +1,5 @@
-global-exclude *.py[cod]
-prune __pycache__
 prune example
-prune requirements
-prune tests
-exclude .editorconfig
-exclude .pre-commit-config.yaml
 exclude package.json
-exclude tox.ini
 include HISTORY.rst
 include LICENSE
 include pyproject.toml
