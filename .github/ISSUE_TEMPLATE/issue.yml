@@ -25,6 +25,14 @@ body:
     placeholder: 1.0.0
   validations:
     required: false
+- type: input
+  id: browser
+  attributes:
+    label: Browser
+    description: Which browser and version are you using? Have you tried others?
+    placeholder: Firefox 100
+  validations:
+    required: false
 - type: textarea
   id: description
   attributes:
