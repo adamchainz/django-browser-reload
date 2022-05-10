@@ -5,20 +5,11 @@ from http import HTTPStatus
 from pathlib import Path
 from unittest import mock
 
-import django
-import pytest
 from django.conf import settings
 from django.test import SimpleTestCase, override_settings
 
 import django_browser_reload
 from django_browser_reload import views
-
-django_3_1_plus = pytest.mark.skipif(
-    django.VERSION < (3, 1), reason="Requires Django 3.1+"
-)
-django_3_2_plus = pytest.mark.skipif(
-    django.VERSION < (3, 2), reason="Requires Django 3.2+"
-)
 
 
 class OnAutoreloadStartedTests(SimpleTestCase):
@@ -47,7 +38,6 @@ class OnFileChangedTests(SimpleTestCase):
         time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
         assert not views.should_reload_event.is_set()
 
-    @django_3_2_plus
     def test_django_template(self):
         path = settings.BASE_DIR / "templates" / "django" / "example.html"
 
@@ -87,7 +77,6 @@ class EventsTests(SimpleTestCase):
 
         assert response.status_code == HTTPStatus.NOT_FOUND
 
-    @django_3_1_plus
     def test_fail_not_accepted(self):
         response = self.client.get("/__reload__/events/", HTTP_ACCEPT="text/html")
 
