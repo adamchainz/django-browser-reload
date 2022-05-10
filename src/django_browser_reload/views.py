@@ -6,7 +6,6 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any, Generator
 
-import django
 from django.conf import settings
 from django.contrib.staticfiles.finders import (
     AppDirectoriesFinder,
@@ -18,18 +17,12 @@ from django.dispatch import receiver
 from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.http.response import HttpResponseBase
 from django.template import engines
+from django.template.autoreload import (
+    get_template_directories as django_template_directories,
+)
 from django.template.backends.base import BaseEngine
 from django.utils.autoreload import BaseReloader, autoreload_started, file_changed
 from django.utils.crypto import get_random_string
-
-if django.VERSION >= (3, 2):
-    from django.template.autoreload import (
-        get_template_directories as django_template_directories,
-    )
-
-    HAVE_DJANGO_TEMPLATE_DIRECTORIES = True
-else:
-    HAVE_DJANGO_TEMPLATE_DIRECTORIES = False
 
 # For detecting when Python has reloaded, use a random version ID in memory.
 # When the worker receives a different version from the one it saw previously,
@@ -106,11 +99,10 @@ def on_file_changed(*, file_path: Path, **kwargs: Any) -> bool | None:
     file_parents = file_path.parents
 
     # Django Templates
-    if HAVE_DJANGO_TEMPLATE_DIRECTORIES:
-        for template_dir in django_template_directories():
-            if template_dir in file_parents:
-                trigger_reload_soon()
-                return True
+    for template_dir in django_template_directories():
+        if template_dir in file_parents:
+            trigger_reload_soon()
+            return True
 
     # Jinja Templates
     for template_dir in jinja_template_directories():
@@ -146,7 +138,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
     if not settings.DEBUG:
         raise Http404()
 
-    if django.VERSION >= (3, 1) and not request.accepts("text/event-stream"):
+    if not request.accepts("text/event-stream"):
         return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
     def event_stream() -> Generator[bytes, None, None]:
