@@ -1,5 +1,3 @@
-prune example
-exclude package.json
 include HISTORY.rst
 include LICENSE
 include pyproject.toml
