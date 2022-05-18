@@ -22,11 +22,8 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
     @override_settings(DEBUG=False)
     def test_not_debug_instantiation(self):
-        def get_response(request: HttpRequest) -> HttpResponse:
-            return self.response
-
         with self.assertRaises(MiddlewareNotUsed):
-            BrowserReloadMiddleware(get_response)
+            BrowserReloadMiddleware(lambda request: self.response)
 
     @override_settings(DEBUG=False)
     def test_not_debug(self):
