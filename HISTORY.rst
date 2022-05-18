@@ -2,6 +2,9 @@
 History
 =======
 
+1.5.0 (2022-05-18)
+------------------
+
 * Add async support to the middleware, to reduce overhead on async projects.
 
 * Disable middleware at Django startup when ``DEBUG`` is ``False``.
