@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from django.test import RequestFactory, SimpleTestCase, override_settings
 
@@ -18,6 +19,11 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
             return self.response
 
         self.middleware = BrowserReloadMiddleware(get_response)
+
+    @override_settings(DEBUG=False)
+    def test_not_debug_instantiation(self):
+        with self.assertRaises(MiddlewareNotUsed):
+            BrowserReloadMiddleware(self.middleware.get_response)
 
     @override_settings(DEBUG=False)
     def test_not_debug(self):
