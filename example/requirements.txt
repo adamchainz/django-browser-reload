@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-asgiref==3.5.1
+asgiref==3.5.2
     # via django
 django==4.0.4
     # via -r requirements.in
