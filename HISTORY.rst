@@ -2,6 +2,8 @@
 History
 =======
 
+* Add async support to the middleware, to reduce overhead on async projects.
+
 1.4.0 (2022-05-10)
 ------------------
 

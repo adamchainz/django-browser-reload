@@ -23,6 +23,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
     def test_not_debug(self):
         response = self.middleware(self.request)
 
+        assert isinstance(response, HttpResponse)
         assert response.content == b"<html><body></body></html>"
 
     def test_streaming_response(self):
@@ -33,6 +34,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
         response = self.middleware(self.request)
 
+        assert isinstance(response, StreamingHttpResponse)
         content = b"".join(response.streaming_content)
         assert content == b"<html><body></body></html>"
 
@@ -41,6 +43,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
         response = self.middleware(self.request)
 
+        assert isinstance(response, HttpResponse)
         assert response.content == b"<html><body></body></html>"
 
     def test_text_response(self):
@@ -48,6 +51,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
         response = self.middleware(self.request)
 
+        assert isinstance(response, HttpResponse)
         assert response.content == b"<html><body></body></html>"
 
     def test_no_match(self):
@@ -55,6 +59,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
         response = self.middleware(self.request)
 
+        assert isinstance(response, HttpResponse)
         assert response.content == b"<html><body>Woops"
 
     def test_success(self):
@@ -63,6 +68,25 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
         response = self.middleware(self.request)
 
+        assert isinstance(response, HttpResponse)
+        assert response.content == (
+            b"<html><body>"
+            + b'<script src="/static/django-browser-reload/reload-listener.js"'
+            + b' data-worker-script-path="/static/django-browser-reload/'
+            + b'reload-worker.js"'
+            + b' data-events-path="/__reload__/events/" defer></script>'
+            + b"</body></html>"
+        )
+
+    async def test_async_success(self):
+        async def get_response(request: HttpRequest) -> HttpResponse:
+            return self.response
+
+        middleware = BrowserReloadMiddleware(get_response)
+
+        response = await middleware(self.request)
+
+        assert isinstance(response, HttpResponse)
         assert response.content == (
             b"<html><body>"
             + b'<script src="/static/django-browser-reload/reload-listener.js"'
@@ -77,6 +101,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
         response = self.middleware(self.request)
 
+        assert isinstance(response, HttpResponse)
         assert response.content == (
             b"<html><body>"
             + b'<script src="/static/django-browser-reload/reload-listener.js"'
@@ -91,6 +116,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
         response = self.middleware(self.request)
 
+        assert isinstance(response, HttpResponse)
         assert response.content == (
             b"<html><body></body><body>"
             + b'<script src="/static/django-browser-reload/reload-listener.js"'
