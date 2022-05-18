@@ -5,6 +5,7 @@ import re
 from typing import Any, Callable, Coroutine
 
 from django.conf import settings
+from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpRequest
 from django.http.response import HttpResponseBase
 
@@ -18,6 +19,9 @@ class BrowserReloadMiddleware:
     async_capable = True
 
     def __init__(self, get_response: Callable[[HttpRequest], HttpResponseBase]) -> None:
+        if not settings.DEBUG:
+            raise MiddlewareNotUsed()
+
         self.get_response = get_response
         if asyncio.iscoroutinefunction(self.get_response):
             # Mark the class as async-capable, but do the actual switch
