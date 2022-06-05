@@ -23,9 +23,9 @@ Automatically reload your browser in development.
 Requirements
 ------------
 
-Python 3.7 to 3.10 supported.
+Python 3.7 to 3.11 supported.
 
-Django 3.2 to 4.0 supported.
+Django 3.2 to 4.1 supported.
 
 Your browser needs to support:
 
