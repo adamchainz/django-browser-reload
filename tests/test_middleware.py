@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
+from django.http.response import HttpResponseBase
 from django.test import RequestFactory, SimpleTestCase, override_settings
 
 from django_browser_reload.middleware import BrowserReloadMiddleware
@@ -13,9 +14,9 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
     def setUp(self):
         self.request = self.request_factory.get("/")
-        self.response = HttpResponse("<html><body></body></html>")
+        self.response: HttpResponseBase = HttpResponse("<html><body></body></html>")
 
-        def get_response(request: HttpRequest) -> HttpResponse:
+        def get_response(request: HttpRequest) -> HttpResponseBase:
             return self.response
 
         self.middleware = BrowserReloadMiddleware(get_response)
@@ -86,11 +87,13 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
 
     async def test_async_success(self):
         async def get_response(request: HttpRequest) -> HttpResponse:
-            return self.response
+            return HttpResponse("<html><body></body></html>")
 
         middleware = BrowserReloadMiddleware(get_response)
 
-        response = await middleware(self.request)
+        result = middleware(self.request)
+        assert not isinstance(result, HttpResponseBase)
+        response = await result
 
         assert isinstance(response, HttpResponse)
         assert response.content == (

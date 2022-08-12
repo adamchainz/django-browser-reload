@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import asyncio
 import re
-from typing import Any, Callable, Coroutine
+from typing import Awaitable, Callable
 
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 
 from django_browser_reload.jinja import django_browser_reload_script
@@ -18,7 +18,13 @@ class BrowserReloadMiddleware:
     sync_capable = True
     async_capable = True
 
-    def __init__(self, get_response: Callable[[HttpRequest], HttpResponseBase]) -> None:
+    def __init__(
+        self,
+        get_response: (
+            Callable[[HttpRequest], HttpResponseBase]
+            | Callable[[HttpRequest], Awaitable[HttpResponseBase]]
+        ),
+    ) -> None:
         if not settings.DEBUG:
             raise MiddlewareNotUsed()
 
@@ -34,18 +40,19 @@ class BrowserReloadMiddleware:
 
     def __call__(
         self, request: HttpRequest
-    ) -> HttpResponseBase | Coroutine[Any, Any, Any]:
+    ) -> HttpResponseBase | Awaitable[HttpResponseBase]:
         if self._is_coroutine:
             return self.__acall__(request)
 
         response = self.get_response(request)
+        assert isinstance(response, HttpResponseBase)
         self.maybe_inject(response)
         return response
 
-    async def __acall__(
-        self, request: HttpRequest
-    ) -> Coroutine[Any, Any, HttpResponseBase]:
-        response = await self.get_response(request)
+    async def __acall__(self, request: HttpRequest) -> HttpResponseBase:
+        result = self.get_response(request)
+        assert not isinstance(result, HttpResponseBase)  # type narrow
+        response = await result
         self.maybe_inject(response)
         return response
 
@@ -58,6 +65,7 @@ class BrowserReloadMiddleware:
         ):
             return
 
+        assert isinstance(response, HttpResponse)
         content = response.content.decode(response.charset)
         # Find last match
         found = False
@@ -71,5 +79,5 @@ class BrowserReloadMiddleware:
         tail = content[match.end() :]
 
         response.content = head + django_browser_reload_script() + tag + tail
-        if "Content-Length" in response:
+        if "Content-Length" in response:  # type: ignore [operator]
             response["Content-Length"] = len(response.content)

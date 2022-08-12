@@ -6,6 +6,7 @@ from pathlib import Path
 from unittest import mock
 
 from django.conf import settings
+from django.http import StreamingHttpResponse
 from django.test import SimpleTestCase, override_settings
 
 import django_browser_reload
@@ -84,6 +85,7 @@ class EventsTests(SimpleTestCase):
 
     def test_success_ping(self):
         response = self.client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
@@ -97,6 +99,7 @@ class EventsTests(SimpleTestCase):
     @mock.patch.object(views, "PING_DELAY", 0.001)
     def test_success_ping_twice(self):
         response = self.client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
@@ -106,6 +109,7 @@ class EventsTests(SimpleTestCase):
 
     def test_success_template_change(self):
         response = self.client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
         views.should_reload_event.set()
 
         assert response.status_code == HTTPStatus.OK

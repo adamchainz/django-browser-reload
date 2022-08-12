@@ -12,7 +12,7 @@ from django.contrib.staticfiles.finders import (
     FileSystemFinder,
     get_finders,
 )
-from django.core.files.storage import Storage
+from django.core.files.storage import FileSystemStorage
 from django.dispatch import receiver
 from django.http import Http404, HttpRequest, HttpResponse, StreamingHttpResponse
 from django.http.response import HttpResponseBase
@@ -55,7 +55,7 @@ def jinja_template_directories() -> set[Path]:
 
         from jinja2 import FileSystemLoader
 
-        loader = backend.env.loader
+        loader = backend.env.loader  # type: ignore [attr-defined]
         if not isinstance(loader, FileSystemLoader):  # pragma: no cover
             continue
 
@@ -73,7 +73,7 @@ def _is_jinja_backend(backend: BaseEngine) -> bool:
     )
 
 
-def static_finder_storages() -> Generator[Storage, None, None]:
+def static_finder_storages() -> Generator[FileSystemStorage, None, None]:
     for finder in get_finders():
         if not isinstance(
             finder, (AppDirectoriesFinder, FileSystemFinder)
