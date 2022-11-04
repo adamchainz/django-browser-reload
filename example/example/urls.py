@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from django.urls import include
 from django.urls import path
-
 from example.core import views as core_views
 
 urlpatterns = [
