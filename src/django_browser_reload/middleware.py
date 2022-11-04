@@ -2,11 +2,13 @@ from __future__ import annotations
 
 import asyncio
 import re
-from typing import Awaitable, Callable
+from typing import Awaitable
+from typing import Callable
 
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest
+from django.http import HttpResponse
 from django.http.response import HttpResponseBase
 
 from django_browser_reload.jinja import django_browser_reload_script
