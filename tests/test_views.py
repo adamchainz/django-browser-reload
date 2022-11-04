@@ -5,11 +5,11 @@ from http import HTTPStatus
 from pathlib import Path
 from unittest import mock
 
+import django_browser_reload
 from django.conf import settings
 from django.http import StreamingHttpResponse
-from django.test import SimpleTestCase, override_settings
-
-import django_browser_reload
+from django.test import override_settings
+from django.test import SimpleTestCase
 from django_browser_reload import views
 
 

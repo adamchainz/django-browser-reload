@@ -3,9 +3,8 @@ from __future__ import annotations
 from typing import Any
 
 from django.templatetags.static import static
-from jinja2 import Environment
-
 from django_browser_reload.jinja import django_browser_reload_script
+from jinja2 import Environment
 
 
 def environment(**options: Any) -> Environment:
