@@ -17,7 +17,7 @@ DEBUG = os.environ.get("DEBUG", "") == "1"
 
 INSTALLED_APPS = [
     # Project
-    "example.core",
+    "example",
     # Third Party
     "django_browser_reload",
     # Contrib
