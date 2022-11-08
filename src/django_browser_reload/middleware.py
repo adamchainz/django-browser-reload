@@ -81,5 +81,5 @@ class BrowserReloadMiddleware:
         tail = content[match.end() :]
 
         response.content = head + django_browser_reload_script() + tag + tail
-        if "Content-Length" in response:  # type: ignore [operator]
+        if "Content-Length" in response:
             response["Content-Length"] = len(response.content)
