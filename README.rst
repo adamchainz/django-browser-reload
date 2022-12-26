@@ -2,7 +2,7 @@
 django-browser-reload
 =====================
 
-.. image:: https://img.shields.io/github/workflow/status/adamchainz/django-browser-reload/CI/main?style=for-the-badge
+.. image:: https://img.shields.io/github/actions/workflow/status/adamchainz/django-browser-reload/main.yml?branch=main&style=for-the-badge
    :target: https://github.com/adamchainz/django-browser-reload/actions?workflow=CI
 
 .. image:: https://img.shields.io/badge/Coverage-100%25-success?style=for-the-badge
