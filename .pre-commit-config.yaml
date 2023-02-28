@@ -35,6 +35,12 @@ repos:
     - id: standard
       args:
       - --env=browser
+- repo: https://github.com/rstcheck/rstcheck
+  rev: v6.1.1
+  hooks:
+  - id: rstcheck
+    additional_dependencies:
+    - tomli==2.0.1
 - repo: https://github.com/asottile/pyupgrade
   rev: v3.3.1
   hooks:
