@@ -7,7 +7,9 @@ from unittest import mock
 
 from django.conf import settings
 from django.http import StreamingHttpResponse
+from django.middleware.gzip import GZipMiddleware
 from django.test import override_settings
+from django.test import RequestFactory
 from django.test import SimpleTestCase
 
 import django_browser_reload
@@ -115,6 +117,22 @@ class EventsTests(SimpleTestCase):
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
+        # Skip version ID message
+        next(response.streaming_content)
+        event = next(response.streaming_content)
+        assert event == b'data: {"type": "reload"}\n\n'
+        assert not views.should_reload_event.is_set()
+
+    def test_success_template_change_with_gzip(self):
+        # https://github.com/typeddjango/django-stubs/pull/1421
+        middleware = GZipMiddleware(views.events)  # type: ignore[arg-type]
+        response = middleware(RequestFactory(HTTP_ACCEPT_ENCODING="gzip").get("/"))
+        assert isinstance(response, StreamingHttpResponse)
+        views.should_reload_event.set()
+
+        assert response.status_code == HTTPStatus.OK
+        assert response["Content-Type"] == "text/event-stream"
+        assert response["Content-Encoding"] == ""
         # Skip version ID message
         next(response.streaming_content)
         event = next(response.streaming_content)

@@ -154,7 +154,10 @@ def events(request: HttpRequest) -> HttpResponseBase:
                 should_reload_event.clear()
                 yield message("reload")
 
-    return StreamingHttpResponse(
+    response = StreamingHttpResponse(
         event_stream(),
         content_type="text/event-stream",
     )
+    # Set a Content-Encoding to bypass GzipMiddleware
+    response["Content-Encoding"] = ""
+    return response
