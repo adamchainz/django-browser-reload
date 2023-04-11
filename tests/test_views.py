@@ -126,7 +126,8 @@ class EventsTests(SimpleTestCase):
     def test_success_template_change_with_gzip(self):
         # https://github.com/typeddjango/django-stubs/pull/1421
         middleware = GZipMiddleware(views.events)  # type: ignore[arg-type]
-        response = middleware(RequestFactory(HTTP_ACCEPT_ENCODING="gzip").get("/"))
+        request = RequestFactory(HTTP_ACCEPT_ENCODING="gzip").get("/")
+        response = middleware(request)
         assert isinstance(response, StreamingHttpResponse)
         views.should_reload_event.set()
 

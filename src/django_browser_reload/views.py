@@ -158,6 +158,6 @@ def events(request: HttpRequest) -> HttpResponseBase:
         event_stream(),
         content_type="text/event-stream",
     )
-    # Set a Content-Encoding to bypass GzipMiddleware
-    response["Content-Encoding"] = ""
+    # Set a content-encoding to bypass GzipMiddleware etc.
+    response["content-encoding"] = ""
     return response

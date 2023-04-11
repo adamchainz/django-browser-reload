@@ -2,12 +2,7 @@
 Changelog
 =========
 
-Next
-------------------
-
 * Support using with GzipMiddleware
-
-
 1.7.0 (2023-02-25)
 ------------------
 
