@@ -2,7 +2,8 @@
 Changelog
 =========
 
-* Support using with GzipMiddleware
+* Support use with `GzipMiddleware`, or other middleware that encodes the response.
+
 1.7.0 (2023-02-25)
 ------------------
 
