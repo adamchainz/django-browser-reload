@@ -25,6 +25,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "django.middleware.gzip.GZipMiddleware",
     "django_browser_reload.middleware.BrowserReloadMiddleware",
 ]
 
