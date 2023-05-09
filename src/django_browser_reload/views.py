@@ -153,7 +153,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
     if isinstance(request, ASGIRequest):
         if DJANGO_VERSION < (4, 2):
             err_msg = "We cannot support hot reload with ASGI for Django < 4.2"
-            warnings.warn(err_msg, UserWarning)
+            warnings.warn(err_msg, stacklevel=2)
             return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
         async def async_event_stream() -> AsyncGenerator[bytes, None]:
