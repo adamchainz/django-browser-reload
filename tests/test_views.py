@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import sys
 import time
 from http import HTTPStatus
 from pathlib import Path
 from unittest import mock
+from unittest import skipIf
 
+from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.http import StreamingHttpResponse
 from django.middleware.gzip import GZipMiddleware
@@ -142,3 +145,89 @@ class EventsTests(SimpleTestCase):
         event = next(response_iterable)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
+
+
+@override_settings(DEBUG=True)
+class AsyncEventsTests(SimpleTestCase):
+    @override_settings(DEBUG=False)
+    async def test_fail_not_debug(self):
+        response = await self.async_client.get("/__reload__/events/")
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+
+    async def test_fail_not_accepted(self):
+        if DJANGO_VERSION < (4, 2):
+            response = await self.async_client.get(
+                "/__reload__/events/", ACCEPT="text/html"
+            )
+        else:
+            response = await self.async_client.get(
+                "/__reload__/events/", headers={"accept": "text/html"}
+            )
+
+        assert response.status_code == HTTPStatus.NOT_ACCEPTABLE
+
+    @skipIf(DJANGO_VERSION < (4, 2), "Not supported with Django < 4.2")
+    async def test_success_ping(self):
+        response = await self.async_client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response["Content-Type"] == "text/event-stream"
+
+        if sys.version_info >= (3, 10):
+            event = await anext(aiter(response))
+        else:
+            event = await response.__aiter__().__anext__()
+
+        assert event == (
+            b'data: {"type": "ping", "versionId": "'
+            + views.version_id.encode()
+            + b'"}\n\n'
+        )
+
+    @skipIf(DJANGO_VERSION < (4, 2), "Not supported with Django < 4.2")
+    @mock.patch.object(views, "PING_DELAY", 0.001)
+    async def test_success_ping_twice(self):
+        response = await self.async_client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response["Content-Type"] == "text/event-stream"
+        if sys.version_info >= (3, 10):
+            response_iter = aiter(response)
+            event1 = await anext(response_iter)
+            event2 = await anext(response_iter)
+        else:
+            response_iter = response.__aiter__()
+            event1 = await response_iter.__anext__()
+            event2 = await response_iter.__anext__()
+        assert event1 == event2
+
+    @skipIf(DJANGO_VERSION < (4, 2), "Not supported with Django < 4.2")
+    async def test_success_template_change(self):
+        response = await self.async_client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
+        views.should_reload_event.set()
+
+        assert response.status_code == HTTPStatus.OK
+        assert response["Content-Type"] == "text/event-stream"
+        if sys.version_info >= (3, 10):
+            response_iter = aiter(response)
+            # Skip version ID message
+            await anext(response_iter)
+            event = await anext(response_iter)
+        else:
+            response_iter = response.__aiter__()
+            # Skip version ID message
+            await response_iter.__anext__()
+            event = await response_iter.__anext__()
+        assert event == b'data: {"type": "reload"}\n\n'
+        assert not views.should_reload_event.is_set()
+
+    @skipIf(DJANGO_VERSION >= (4, 2), "Not supported with Django < 4.2")
+    async def test_fail_ping(self):
+        with self.assertWarns(UserWarning):
+            response = await self.async_client.get("/__reload__/events/")
+
+        assert response.status_code == HTTPStatus.NOT_ACCEPTABLE

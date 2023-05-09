@@ -1,17 +1,22 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import threading
+import warnings
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any
+from typing import AsyncGenerator
 from typing import Generator
 
+from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.contrib.staticfiles.finders import AppDirectoriesFinder
 from django.contrib.staticfiles.finders import FileSystemFinder
 from django.contrib.staticfiles.finders import get_finders
 from django.core.files.storage import FileSystemStorage
+from django.core.handlers.asgi import ASGIRequest
 from django.dispatch import receiver
 from django.http import Http404
 from django.http import HttpRequest
@@ -145,19 +150,40 @@ def events(request: HttpRequest) -> HttpResponseBase:
     if not request.accepts("text/event-stream"):
         return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
-    def event_stream() -> Generator[bytes, None, None]:
-        while True:
-            yield message("ping", versionId=version_id)
+    if isinstance(request, ASGIRequest):
+        if DJANGO_VERSION < (4, 2):
+            err_msg = "We cannot support hot reload with ASGI for Django < 4.2"
+            warnings.warn(err_msg, UserWarning)
+            return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
-            should_reload = should_reload_event.wait(timeout=PING_DELAY)
-            if should_reload:
-                should_reload_event.clear()
-                yield message("reload")
+        async def async_event_stream() -> AsyncGenerator[bytes, None]:
+            while True:
+                await asyncio.sleep(PING_DELAY)
+                yield message("ping", versionId=version_id)
 
-    response = StreamingHttpResponse(
-        event_stream(),
-        content_type="text/event-stream",
-    )
+                if should_reload_event.is_set():
+                    should_reload_event.clear()
+                    yield message("reload")
+
+        response = StreamingHttpResponse(
+            async_event_stream(),
+            content_type="text/event-stream",
+        )
+    else:
+
+        def event_stream() -> Generator[bytes, None, None]:
+            while True:
+                yield message("ping", versionId=version_id)
+
+                should_reload = should_reload_event.wait(timeout=PING_DELAY)
+                if should_reload:
+                    should_reload_event.clear()
+                    yield message("reload")
+
+        response = StreamingHttpResponse(
+            event_stream(),
+            content_type="text/event-stream",
+        )
     # Set a content-encoding to bypass GzipMiddleware etc.
     response["content-encoding"] = ""
     return response
