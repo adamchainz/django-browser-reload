@@ -92,7 +92,8 @@ class EventsTests(SimpleTestCase):
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
-        event = next(response.streaming_content)
+        response_iterable = iter(response)
+        event = next(response_iterable)
         assert event == (
             b'data: {"type": "ping", "versionId": "'
             + views.version_id.encode()
@@ -106,8 +107,9 @@ class EventsTests(SimpleTestCase):
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
-        event1 = next(response.streaming_content)
-        event2 = next(response.streaming_content)
+        response_iterable = iter(response)
+        event1 = next(response_iterable)
+        event2 = next(response_iterable)
         assert event1 == event2
 
     def test_success_template_change(self):
@@ -117,9 +119,10 @@ class EventsTests(SimpleTestCase):
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
+        response_iterable = iter(response)
         # Skip version ID message
-        next(response.streaming_content)
-        event = next(response.streaming_content)
+        next(response_iterable)
+        event = next(response_iterable)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
 
@@ -133,8 +136,9 @@ class EventsTests(SimpleTestCase):
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
         assert response["Content-Encoding"] == ""
+        response_iterable = iter(response)
         # Skip version ID message
-        next(response.streaming_content)
-        event = next(response.streaming_content)
+        next(response_iterable)
+        event = next(response_iterable)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
