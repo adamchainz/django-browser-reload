@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest import mock
 from unittest import skipIf
 
-from django import VERSION as DJANGO_VERSION
+import django
 from django.conf import settings
 from django.http import StreamingHttpResponse
 from django.middleware.gzip import GZipMiddleware
@@ -147,6 +147,12 @@ class EventsTests(SimpleTestCase):
         assert not views.should_reload_event.is_set()
 
 
+django_4_2_plus = skipIf(
+    django.VERSION < (4, 2),
+    "Requires Django 4.2+",
+)
+
+
 @override_settings(DEBUG=True)
 class AsyncEventsTests(SimpleTestCase):
     @override_settings(DEBUG=False)
@@ -156,18 +162,13 @@ class AsyncEventsTests(SimpleTestCase):
         assert response.status_code == HTTPStatus.NOT_FOUND
 
     async def test_fail_not_accepted(self):
-        if DJANGO_VERSION < (4, 2):
-            response = await self.async_client.get(
-                "/__reload__/events/", ACCEPT="text/html"
-            )
-        else:
-            response = await self.async_client.get(
-                "/__reload__/events/", headers={"accept": "text/html"}
-            )
+        response = await self.async_client.get(
+            "/__reload__/events/", ACCEPT="text/html"
+        )
 
         assert response.status_code == HTTPStatus.NOT_ACCEPTABLE
 
-    @skipIf(DJANGO_VERSION < (4, 2), "Not supported with Django < 4.2")
+    @django_4_2_plus
     async def test_success_ping(self):
         response = await self.async_client.get("/__reload__/events/")
         assert isinstance(response, StreamingHttpResponse)
@@ -186,7 +187,7 @@ class AsyncEventsTests(SimpleTestCase):
             + b'"}\n\n'
         )
 
-    @skipIf(DJANGO_VERSION < (4, 2), "Not supported with Django < 4.2")
+    @django_4_2_plus
     @mock.patch.object(views, "PING_DELAY", 0.001)
     async def test_success_ping_twice(self):
         response = await self.async_client.get("/__reload__/events/")
@@ -204,7 +205,7 @@ class AsyncEventsTests(SimpleTestCase):
             event2 = await response_iter.__anext__()
         assert event1 == event2
 
-    @skipIf(DJANGO_VERSION < (4, 2), "Not supported with Django < 4.2")
+    @django_4_2_plus
     async def test_success_template_change(self):
         response = await self.async_client.get("/__reload__/events/")
         assert isinstance(response, StreamingHttpResponse)
@@ -224,10 +225,3 @@ class AsyncEventsTests(SimpleTestCase):
             event = await response_iter.__anext__()
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
-
-    @skipIf(DJANGO_VERSION >= (4, 2), "Not supported with Django < 4.2")
-    async def test_fail_ping(self):
-        with self.assertWarns(UserWarning):
-            response = await self.async_client.get("/__reload__/events/")
-
-        assert response.status_code == HTTPStatus.NOT_ACCEPTABLE

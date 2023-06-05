@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import json
 import threading
-import warnings
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any
@@ -11,7 +10,6 @@ from typing import AsyncGenerator
 from typing import Callable
 from typing import Generator
 
-from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.contrib.staticfiles.finders import AppDirectoriesFinder
 from django.contrib.staticfiles.finders import FileSystemFinder
@@ -156,10 +154,6 @@ def events(request: HttpRequest) -> HttpResponseBase:
     ]
 
     if isinstance(request, ASGIRequest):
-        if DJANGO_VERSION < (4, 2):
-            err_msg = "We cannot support hot reload with ASGI for Django < 4.2"
-            warnings.warn(err_msg, stacklevel=2)
-            return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
         async def event_stream() -> AsyncGenerator[bytes, None]:
             while True:

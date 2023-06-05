@@ -5,8 +5,10 @@ import re
 from typing import Awaitable
 from typing import Callable
 
+import django
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
+from django.core.handlers.asgi import ASGIRequest
 from django.http import HttpRequest
 from django.http import HttpResponse
 from django.http.response import HttpResponseBase
@@ -14,6 +16,11 @@ from django.http.response import HttpResponseBase
 from django_browser_reload.jinja import django_browser_reload_script
 
 insert_before_re = re.compile(r"</body>", flags=re.IGNORECASE)
+
+if django.VERSION >= (4, 2):
+    ASGI_SUPPORTED = True
+else:
+    ASGI_SUPPORTED = False
 
 
 class BrowserReloadMiddleware:
@@ -48,19 +55,20 @@ class BrowserReloadMiddleware:
 
         response = self.get_response(request)
         assert isinstance(response, HttpResponseBase)
-        self.maybe_inject(response)
+        self.maybe_inject(request, response)
         return response
 
     async def __acall__(self, request: HttpRequest) -> HttpResponseBase:
         result = self.get_response(request)
         assert not isinstance(result, HttpResponseBase)  # type narrow
         response = await result
-        self.maybe_inject(response)
+        self.maybe_inject(request, response)
         return response
 
-    def maybe_inject(self, response: HttpResponseBase) -> None:
+    def maybe_inject(self, request: HttpRequest, response: HttpResponseBase) -> None:
         if (
             not settings.DEBUG
+            or (not ASGI_SUPPORTED and isinstance(request, ASGIRequest))
             or getattr(response, "streaming", False)
             or response.get("Content-Encoding", "")
             or response.get("Content-Type", "").split(";", 1)[0] != "text/html"
