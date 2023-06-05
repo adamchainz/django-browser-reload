@@ -10,6 +10,7 @@ from typing import AsyncGenerator
 from typing import Callable
 from typing import Generator
 
+import django
 from django.conf import settings
 from django.contrib.staticfiles.finders import AppDirectoriesFinder
 from django.contrib.staticfiles.finders import FileSystemFinder
@@ -154,6 +155,12 @@ def events(request: HttpRequest) -> HttpResponseBase:
     ]
 
     if isinstance(request, ASGIRequest):
+        if django.VERSION < (4, 2):
+            return HttpResponse(
+                "ASGI requires Django 4.2+",
+                status=HTTPStatus.NOT_IMPLEMENTED,
+                content_type="text/plain",
+            )
 
         async def event_stream() -> AsyncGenerator[bytes, None]:
             while True:

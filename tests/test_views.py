@@ -147,10 +147,7 @@ class EventsTests(SimpleTestCase):
         assert not views.should_reload_event.is_set()
 
 
-django_4_2_plus = skipIf(
-    django.VERSION < (4, 2),
-    "Requires Django 4.2+",
-)
+django_4_2_plus = skipIf(django.VERSION < (4, 2), "Requires Django 4.2+")
 
 
 @override_settings(DEBUG=True)
@@ -225,3 +222,11 @@ class AsyncEventsTests(SimpleTestCase):
             event = await response_iter.__anext__()
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
+
+    @skipIf(django.VERSION >= (4, 2), "Requires Django < 4.2")
+    async def test_fail_old_django(self):
+        response = await self.async_client.get("/__reload__/events/")
+
+        assert response.status_code == HTTPStatus.NOT_IMPLEMENTED
+        assert response["content-type"] == "text/plain"
+        assert response.content == b"ASGI requires Django 4.2+"
