@@ -27,6 +27,8 @@ Python 3.7 to 3.11 supported.
 
 Django 3.2 to 4.2 supported.
 
+WSGI supported on all Django versions. ASGI supported on Django 4.2+.
+
 Your browser needs to support:
 
 * |EventSource|__ - universally available.

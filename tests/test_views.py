@@ -4,7 +4,9 @@ import time
 from http import HTTPStatus
 from pathlib import Path
 from unittest import mock
+from unittest import skipIf
 
+import django
 from django.conf import settings
 from django.http import StreamingHttpResponse
 from django.middleware.gzip import GZipMiddleware
@@ -14,6 +16,8 @@ from django.test import SimpleTestCase
 
 import django_browser_reload
 from django_browser_reload import views
+from tests.compat import aiter
+from tests.compat import anext
 
 
 class OnAutoreloadStartedTests(SimpleTestCase):
@@ -142,3 +146,73 @@ class EventsTests(SimpleTestCase):
         event = next(response_iterable)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
+
+
+django_4_2_plus = skipIf(django.VERSION < (4, 2), "Requires Django 4.2+")
+
+
+@override_settings(DEBUG=True)
+class AsyncEventsTests(SimpleTestCase):
+    @override_settings(DEBUG=False)
+    async def test_fail_not_debug(self):
+        response = await self.async_client.get("/__reload__/events/")
+
+        assert response.status_code == HTTPStatus.NOT_FOUND
+
+    async def test_fail_not_accepted(self):
+        response = await self.async_client.get(
+            "/__reload__/events/", ACCEPT="text/html"
+        )
+
+        assert response.status_code == HTTPStatus.NOT_ACCEPTABLE
+
+    @django_4_2_plus
+    async def test_success_ping(self):
+        response = await self.async_client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response["Content-Type"] == "text/event-stream"
+
+        event = await anext(aiter(response))
+        assert event == (
+            b'data: {"type": "ping", "versionId": "'
+            + views.version_id.encode()
+            + b'"}\n\n'
+        )
+
+    @django_4_2_plus
+    @mock.patch.object(views, "PING_DELAY", 0.001)
+    async def test_success_ping_twice(self):
+        response = await self.async_client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response["Content-Type"] == "text/event-stream"
+        response_iter = aiter(response)
+        event1 = await anext(response_iter)
+        event2 = await anext(response_iter)
+        assert event1 == event2
+
+    @django_4_2_plus
+    async def test_success_template_change(self):
+        response = await self.async_client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
+        views.should_reload_event.set()
+
+        assert response.status_code == HTTPStatus.OK
+        assert response["Content-Type"] == "text/event-stream"
+        response_iter = aiter(response)
+        # Skip version ID message
+        await anext(response_iter)
+        event = await anext(response_iter)
+        assert event == b'data: {"type": "reload"}\n\n'
+        assert not views.should_reload_event.is_set()
+
+    @skipIf(django.VERSION >= (4, 2), "Requires Django < 4.2")
+    async def test_fail_old_django(self):
+        response = await self.async_client.get("/__reload__/events/")
+
+        assert response.status_code == HTTPStatus.NOT_IMPLEMENTED
+        assert response["content-type"] == "text/plain"
+        assert response.content == b"ASGI requires Django 4.2+"

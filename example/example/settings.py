@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     # Project
     "example",
     # Third Party
+    "daphne",
     "django_browser_reload",
     # Contrib
     "django.contrib.staticfiles",
@@ -59,3 +60,9 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_URL = "/static/"
+
+# 3. Third party apps
+
+# daphne
+
+ASGI_APPLICATION = "example.asgi.app"

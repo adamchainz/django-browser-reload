@@ -1,7 +1,7 @@
 Example Project
 ===============
 
-Use Python 3.11 to set up and run with these commands:
+Use Python 3.11 to set up with these commands:
 
 .. code-block:: sh
 
@@ -9,6 +9,17 @@ Use Python 3.11 to set up and run with these commands:
    source .venv/bin/activate
    python -m pip install -U pip wheel
    python -m pip install -r requirements.txt -e ..
+
+Run the sync WSGI server with:
+
+.. code-block:: sh
+
+   DEBUG=1 python manage.py runserver --noasgi
+
+Run the async ASGI server with:
+
+.. code-block:: sh
+
    DEBUG=1 python manage.py runserver
 
 Open it at http://127.0.0.1:8000/ .

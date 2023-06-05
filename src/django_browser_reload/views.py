@@ -1,17 +1,22 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import threading
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any
+from typing import AsyncGenerator
+from typing import Callable
 from typing import Generator
 
+import django
 from django.conf import settings
 from django.contrib.staticfiles.finders import AppDirectoriesFinder
 from django.contrib.staticfiles.finders import FileSystemFinder
 from django.contrib.staticfiles.finders import get_finders
 from django.core.files.storage import FileSystemStorage
+from django.core.handlers.asgi import ASGIRequest
 from django.dispatch import receiver
 from django.http import Http404
 from django.http import HttpRequest
@@ -145,14 +150,37 @@ def events(request: HttpRequest) -> HttpResponseBase:
     if not request.accepts("text/event-stream"):
         return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
-    def event_stream() -> Generator[bytes, None, None]:
-        while True:
-            yield message("ping", versionId=version_id)
+    event_stream: Callable[[], AsyncGenerator[bytes, None]] | Callable[
+        [], Generator[bytes, None, None]
+    ]
 
-            should_reload = should_reload_event.wait(timeout=PING_DELAY)
-            if should_reload:
-                should_reload_event.clear()
-                yield message("reload")
+    if isinstance(request, ASGIRequest):
+        if django.VERSION < (4, 2):
+            return HttpResponse(
+                "ASGI requires Django 4.2+",
+                status=HTTPStatus.NOT_IMPLEMENTED,
+                content_type="text/plain",
+            )
+
+        async def event_stream() -> AsyncGenerator[bytes, None]:
+            while True:
+                await asyncio.sleep(PING_DELAY)
+                yield message("ping", versionId=version_id)
+
+                if should_reload_event.is_set():
+                    should_reload_event.clear()
+                    yield message("reload")
+
+    else:
+
+        def event_stream() -> Generator[bytes, None, None]:
+            while True:
+                yield message("ping", versionId=version_id)
+
+                should_reload = should_reload_event.wait(timeout=PING_DELAY)
+                if should_reload:
+                    should_reload_event.clear()
+                    yield message("reload")
 
     response = StreamingHttpResponse(
         event_stream(),
