@@ -46,7 +46,7 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
         response = self.middleware(self.request)
 
         assert isinstance(response, StreamingHttpResponse)
-        content = b"".join(response.streaming_content)
+        content = b"".join(response)
         assert content == b"<html><body></body></html>"
 
     def test_encoded_response(self):
