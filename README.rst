@@ -29,10 +29,16 @@ Django 3.2 to 4.2 supported.
 
 Your browser needs to support:
 
-* ``EventSource`` - `universally available <https://developer.mozilla.org/en-US/docs/Web/API/EventSource#browser_compatibility>`__.
+* |EventSource|__ - universally available.
 
-* ``SharedWorker`` - `available <https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker#browser_compatibility>`__ on Chrome, Edge, Firefox, and Opera.
-  Safari removed support but `are reinstating it <https://bugs.webkit.org/show_bug.cgi?id=149850>`__ - they recently `merged the feature <https://twitter.com/chris_dumez/status/1491650913441701896>`__ (2022-02-10).
+  .. |EventSource| replace:: ``EventSource``
+  __ https://developer.mozilla.org/en-US/docs/Web/API/EventSource#browser_compatibility
+
+* |SharedWorker|__ - available on Chrome, Edge, Firefox, and Opera for a long time.
+  Available on Safari since version 16 (2022-09-12).
+
+  .. |SharedWorker| replace:: ``SharedWorker``
+  __ https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker#browser_compatibility
 
 ----
 
@@ -63,7 +69,7 @@ Installation
            ...,
        ]
 
-4. Include the app URL’s in your root URLconf(s):
+4. Include the app URLs in your root URLconf:
 
    .. code-block:: python
 
@@ -86,7 +92,7 @@ Installation
           # ...
       ]
 
-   The middleware should be listed after any that encode the response, such as Django’s ``GZipMiddleware``.
+   The middleware should be listed after any others that encode the response, such as Django’s ``GZipMiddleware``.
 
    The middleware automatically inserts the required script tag on HTML responses before ``</body>`` when ``DEBUG`` is ``True``.
    It does so to every HTML response, meaning it will be included on Django’s debug pages, admin pages, etc.
@@ -101,7 +107,6 @@ What It Does
 
 When ``DEBUG`` is ``True``, the template tag includes a small script.
 This script connects back to the development server and will automatically reload when static assets or templates are modified, or after ``runserver`` restarts.
-(Detecting modification of Django templates requires Django 3.2+.)
 The reload only happens in the most recently opened tab.
 
 Example Project
@@ -193,13 +198,13 @@ Here’s a diagram:
     Events View --------------------> Shared worker
 
 The template tag includes a listener script on each page.
-This listener script starts or connects to a |SharedWorker|__, running a worker script.
-The worker script then connects to the events view in Django, using an |EventSource|__ to receive server-sent events.
+This listener script starts or connects to a |SharedWorker2|__, running a worker script.
+The worker script then connects to the events view in Django, using an |EventSource2|__ to receive server-sent events.
 
-.. |SharedWorker| replace:: ``SharedWorker``
+.. |SharedWorker2| replace:: ``SharedWorker``
 __ https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker
 
-.. |EventSource| replace:: ``EventSource``
+.. |EventSource2| replace:: ``EventSource``
 __ https://developer.mozilla.org/en-US/docs/Web/API/EventSource
 
 This event source uses |StreamingHttpResponse|__ to send events to the worker.
