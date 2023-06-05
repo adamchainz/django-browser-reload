@@ -147,7 +147,7 @@ To add django-browser-reload to Django’s admin, do so in a template called ``a
         {% django_browser_reload_script %}
     {% endblock %}
 
-This follows Django’s documentation on `extending an overriden template <https://docs.djangoproject.com/en/4.0/howto/overriding-templates/#extending-an-overridden-template>`__.
+This follows Django’s documentation on `extending an overridden template <https://docs.djangoproject.com/en/4.0/howto/overriding-templates/#extending-an-overridden-template>`__.
 
 For **Jinja Templates**, you need to perform two steps.
 First, load the tag function into the globals of your `custom environment <https://docs.djangoproject.com/en/stable/topics/templates/#django.template.backends.jinja2.Jinja2>`__:
