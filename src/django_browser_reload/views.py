@@ -8,6 +8,7 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any
 from typing import AsyncGenerator
+from typing import Callable
 from typing import Generator
 
 from django import VERSION as DJANGO_VERSION
@@ -150,13 +151,17 @@ def events(request: HttpRequest) -> HttpResponseBase:
     if not request.accepts("text/event-stream"):
         return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
+    event_stream: Callable[[], AsyncGenerator[bytes, None]] | Callable[
+        [], Generator[bytes, None, None]
+    ]
+
     if isinstance(request, ASGIRequest):
         if DJANGO_VERSION < (4, 2):
             err_msg = "We cannot support hot reload with ASGI for Django < 4.2"
             warnings.warn(err_msg, stacklevel=2)
             return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
-        async def async_event_stream() -> AsyncGenerator[bytes, None]:
+        async def event_stream() -> AsyncGenerator[bytes, None]:
             while True:
                 await asyncio.sleep(PING_DELAY)
                 yield message("ping", versionId=version_id)
@@ -165,10 +170,6 @@ def events(request: HttpRequest) -> HttpResponseBase:
                     should_reload_event.clear()
                     yield message("reload")
 
-        response = StreamingHttpResponse(
-            async_event_stream(),
-            content_type="text/event-stream",
-        )
     else:
 
         def event_stream() -> Generator[bytes, None, None]:
@@ -180,10 +181,10 @@ def events(request: HttpRequest) -> HttpResponseBase:
                     should_reload_event.clear()
                     yield message("reload")
 
-        response = StreamingHttpResponse(
-            event_stream(),
-            content_type="text/event-stream",
-        )
+    response = StreamingHttpResponse(
+        event_stream(),
+        content_type="text/event-stream",
+    )
     # Set a content-encoding to bypass GzipMiddleware etc.
     response["content-encoding"] = ""
     return response
