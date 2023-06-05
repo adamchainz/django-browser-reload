@@ -2,6 +2,10 @@
 Changelog
 =========
 
+* Support ASGI.
+
+  Thanks to Alexandre Spaeth in `PR #148 <https://github.com/adamchainz/django-browser-reload/pull/148>`__.
+
 1.8.0 (2023-04-11)
 ------------------
 
