@@ -2,7 +2,7 @@
 Changelog
 =========
 
-* Support ASGI.
+* Support ASGI on Django 4.2+.
 
   Thanks to Alexandre Spaeth in `PR #148 <https://github.com/adamchainz/django-browser-reload/pull/148>`__.
 
