@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import sys
 import time
 from http import HTTPStatus
 from pathlib import Path
@@ -17,6 +16,8 @@ from django.test import SimpleTestCase
 
 import django_browser_reload
 from django_browser_reload import views
+from tests.compat import aiter
+from tests.compat import anext
 
 
 class OnAutoreloadStartedTests(SimpleTestCase):
@@ -173,11 +174,7 @@ class AsyncEventsTests(SimpleTestCase):
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
 
-        if sys.version_info >= (3, 10):
-            event = await anext(aiter(response))
-        else:
-            event = await response.__aiter__().__anext__()
-
+        event = await anext(aiter(response))
         assert event == (
             b'data: {"type": "ping", "versionId": "'
             + views.version_id.encode()
@@ -192,14 +189,9 @@ class AsyncEventsTests(SimpleTestCase):
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
-        if sys.version_info >= (3, 10):
-            response_iter = aiter(response)
-            event1 = await anext(response_iter)
-            event2 = await anext(response_iter)
-        else:
-            response_iter = response.__aiter__()
-            event1 = await response_iter.__anext__()
-            event2 = await response_iter.__anext__()
+        response_iter = aiter(response)
+        event1 = await anext(response_iter)
+        event2 = await anext(response_iter)
         assert event1 == event2
 
     @django_4_2_plus
@@ -210,16 +202,10 @@ class AsyncEventsTests(SimpleTestCase):
 
         assert response.status_code == HTTPStatus.OK
         assert response["Content-Type"] == "text/event-stream"
-        if sys.version_info >= (3, 10):
-            response_iter = aiter(response)
-            # Skip version ID message
-            await anext(response_iter)
-            event = await anext(response_iter)
-        else:
-            response_iter = response.__aiter__()
-            # Skip version ID message
-            await response_iter.__anext__()
-            event = await response_iter.__anext__()
+        response_iter = aiter(response)
+        # Skip version ID message
+        await anext(response_iter)
+        event = await anext(response_iter)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
 
