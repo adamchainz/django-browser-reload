@@ -2,6 +2,9 @@
 Changelog
 =========
 
+1.9.0 (2023-06-05)
+------------------
+
 * Support ASGI on Django 4.2+.
 
   Thanks to Alexandre Spaeth in `PR #148 <https://github.com/adamchainz/django-browser-reload/pull/148>`__.
