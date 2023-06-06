@@ -62,8 +62,8 @@ class BrowserReloadMiddleware:
         if (
             not settings.DEBUG
             or getattr(response, "streaming", False)
-            or response.get("Content-Encoding", "")
-            or response.get("Content-Type", "").split(";", 1)[0] != "text/html"
+            or response.headers.get("content-encoding", "")
+            or response.headers.get("content-type", "").split(";", 1)[0] != "text/html"
         ):
             return
 
@@ -81,5 +81,5 @@ class BrowserReloadMiddleware:
         tail = content[match.end() :]
 
         response.content = head + django_browser_reload_script() + tag + tail
-        if "Content-Length" in response:
-            response["Content-Length"] = len(response.content)
+        if "content-length" in response.headers:
+            response["content-length"] = len(response.content)

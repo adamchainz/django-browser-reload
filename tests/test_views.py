@@ -95,7 +95,7 @@ class EventsTests(SimpleTestCase):
         assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
-        assert response["Content-Type"] == "text/event-stream"
+        assert response.headers["content-type"] == "text/event-stream"
         response_iterable = iter(response)
         event = next(response_iterable)
         assert event == (
@@ -110,7 +110,7 @@ class EventsTests(SimpleTestCase):
         assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
-        assert response["Content-Type"] == "text/event-stream"
+        assert response.headers["content-type"] == "text/event-stream"
         response_iterable = iter(response)
         event1 = next(response_iterable)
         event2 = next(response_iterable)
@@ -122,7 +122,7 @@ class EventsTests(SimpleTestCase):
         views.should_reload_event.set()
 
         assert response.status_code == HTTPStatus.OK
-        assert response["Content-Type"] == "text/event-stream"
+        assert response.headers["content-type"] == "text/event-stream"
         response_iterable = iter(response)
         # Skip version ID message
         next(response_iterable)
@@ -138,8 +138,8 @@ class EventsTests(SimpleTestCase):
         views.should_reload_event.set()
 
         assert response.status_code == HTTPStatus.OK
-        assert response["Content-Type"] == "text/event-stream"
-        assert response["Content-Encoding"] == ""
+        assert response.headers["content-type"] == "text/event-stream"
+        assert response.headers["content-encoding"] == ""
         response_iterable = iter(response)
         # Skip version ID message
         next(response_iterable)
@@ -172,7 +172,7 @@ class AsyncEventsTests(SimpleTestCase):
         assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
-        assert response["Content-Type"] == "text/event-stream"
+        assert response.headers["content-type"] == "text/event-stream"
 
         event = await anext(aiter(response))
         assert event == (
@@ -188,7 +188,7 @@ class AsyncEventsTests(SimpleTestCase):
         assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
-        assert response["Content-Type"] == "text/event-stream"
+        assert response.headers["content-type"] == "text/event-stream"
         response_iter = aiter(response)
         event1 = await anext(response_iter)
         event2 = await anext(response_iter)
@@ -201,7 +201,7 @@ class AsyncEventsTests(SimpleTestCase):
         views.should_reload_event.set()
 
         assert response.status_code == HTTPStatus.OK
-        assert response["Content-Type"] == "text/event-stream"
+        assert response.headers["content-type"] == "text/event-stream"
         response_iter = aiter(response)
         # Skip version ID message
         await anext(response_iter)
@@ -214,5 +214,5 @@ class AsyncEventsTests(SimpleTestCase):
         response = await self.async_client.get("/__reload__/events/")
 
         assert response.status_code == HTTPStatus.NOT_IMPLEMENTED
-        assert response["content-type"] == "text/plain"
+        assert response.headers["content-type"] == "text/plain"
         assert response.content == b"ASGI requires Django 4.2+"
