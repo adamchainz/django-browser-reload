@@ -38,8 +38,9 @@ from django.utils.crypto import get_random_string
 # it reloads.
 version_id = get_random_string(32)
 
-# Communicate template changes to the running polls thread
+# Communicate changes to the running thread/task
 should_reload_event = threading.Event()
+should_reload_aevent = asyncio.Event()
 
 reload_timer: threading.Timer | None = None
 
@@ -51,8 +52,13 @@ def trigger_reload_soon() -> None:
     if reload_timer is not None:
         reload_timer.cancel()
 
-    reload_timer = threading.Timer(RELOAD_DEBOUNCE_TIME, should_reload_event.set)
+    reload_timer = threading.Timer(RELOAD_DEBOUNCE_TIME, set_events)
     reload_timer.start()
+
+
+def set_events() -> None:
+    should_reload_event.set()
+    should_reload_aevent.set()
 
 
 def jinja_template_directories() -> set[Path]:
@@ -164,12 +170,16 @@ def events(request: HttpRequest) -> HttpResponseBase:
 
         async def event_stream() -> AsyncGenerator[bytes, None]:
             while True:
-                await asyncio.sleep(PING_DELAY)
                 yield message("ping", versionId=version_id)
 
-                if should_reload_event.is_set():
-                    should_reload_event.clear()
-                    yield message("reload")
+                try:
+                    async with asyncio.timeout(PING_DELAY):
+                        await should_reload_aevent.wait()
+                        should_reload_event.clear()
+                        should_reload_aevent.clear()
+                        yield message("reload")
+                except asyncio.TimeoutError:
+                    pass
 
     else:
 
@@ -180,6 +190,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
                 should_reload = should_reload_event.wait(timeout=PING_DELAY)
                 if should_reload:
                     should_reload_event.clear()
+                    should_reload_aevent.clear()
                     yield message("reload")
 
     response = StreamingHttpResponse(

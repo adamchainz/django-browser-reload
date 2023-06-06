@@ -2,6 +2,8 @@
 Changelog
 =========
 
+* Remove delay from ASGI reloading.
+
 1.9.0 (2023-06-05)
 ------------------
 
