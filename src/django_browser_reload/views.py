@@ -174,10 +174,11 @@ def events(request: HttpRequest) -> HttpResponseBase:
 
                 try:
                     async with asyncio.timeout(PING_DELAY):
-                        await should_reload_aevent.wait()
-                        should_reload_event.clear()
-                        should_reload_aevent.clear()
-                        yield message("reload")
+                        should_reload = await should_reload_aevent.wait()
+                        if should_reload:
+                            should_reload_event.clear()
+                            should_reload_aevent.clear()
+                            yield message("reload")
                 except asyncio.TimeoutError:
                     pass
 
