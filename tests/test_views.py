@@ -13,6 +13,7 @@ from django.middleware.gzip import GZipMiddleware
 from django.test import override_settings
 from django.test import RequestFactory
 from django.test import SimpleTestCase
+from django.utils.autoreload import BaseReloader
 
 import django_browser_reload
 from django_browser_reload import views
@@ -24,7 +25,7 @@ class OnAutoreloadStartedTests(SimpleTestCase):
     def test_success(self):
         calls: list[tuple[Path, str]] = []
 
-        class FakeReloader:
+        class FakeReloader(BaseReloader):
             def watch_dir(self, directory, glob):
                 calls.append((directory, glob))
 
