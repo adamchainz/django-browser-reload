@@ -106,7 +106,9 @@ def on_file_changed(*, file_path: Path, **kwargs: Any) -> bool | None:
     # Returning True tells Django *not* to reload
 
     file_parents = file_path.parents
-    ignore_events = getattr(settings, "DJANGO_BROWSER_RELOAD_IGNORE", set())
+    ignore_events: set[str] | list[str] = getattr(
+        settings, "DJANGO_BROWSER_RELOAD_IGNORE", set()
+    )
 
     # Django Templates
     for template_dir in django_template_directories():
