@@ -106,23 +106,27 @@ def on_file_changed(*, file_path: Path, **kwargs: Any) -> bool | None:
     # Returning True tells Django *not* to reload
 
     file_parents = file_path.parents
+    ignore_events = getattr(settings, "DJANGO_BROWSER_RELOAD_IGNORE", set())
 
     # Django Templates
     for template_dir in django_template_directories():
         if template_dir in file_parents:
-            trigger_reload_soon()
+            if "templates" not in ignore_events:
+                trigger_reload_soon()
             return True
 
     # Jinja Templates
     for template_dir in jinja_template_directories():
         if template_dir in file_parents:
-            trigger_reload_soon()
+            if "templates" not in ignore_events:
+                trigger_reload_soon()
             return True
 
     # Static assets
     for storage in static_finder_storages():
         if Path(storage.location) in file_parents:
-            trigger_reload_soon()
+            if "static" not in ignore_events:
+                trigger_reload_soon()
             return True
 
     return None
