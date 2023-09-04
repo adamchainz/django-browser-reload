@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 from typing import Any
 
+asgi = os.environ.get("ASGI") == "1"
+
 # 1. Django Core Settings
 
 # Dangerous: disable host header validation
@@ -19,11 +21,12 @@ INSTALLED_APPS = [
     # Project
     "example",
     # Third Party
-    "daphne",
     "django_browser_reload",
     # Contrib
     "django.contrib.staticfiles",
 ]
+if asgi:
+    INSTALLED_APPS.insert(1, "daphne")
 
 MIDDLEWARE = [
     "django.middleware.gzip.GZipMiddleware",

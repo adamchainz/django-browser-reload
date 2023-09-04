@@ -5,14 +5,71 @@
 #    pip-compile
 #
 asgiref==3.7.2
-    # via django
+    # via
+    #   daphne
+    #   django
+attrs==23.1.0
+    # via
+    #   automat
+    #   service-identity
+    #   twisted
+autobahn==23.6.2
+    # via daphne
+automat==22.10.0
+    # via twisted
+cffi==1.15.1
+    # via cryptography
+constantly==15.1.0
+    # via twisted
+cryptography==41.0.3
+    # via
+    #   autobahn
+    #   pyopenssl
+    #   service-identity
+daphne==4.0.0
+    # via -r requirements.in
 django==4.2.1
     # via -r requirements.in
+hyperlink==21.0.0
+    # via
+    #   autobahn
+    #   twisted
+idna==3.4
+    # via
+    #   hyperlink
+    #   twisted
+incremental==22.10.0
+    # via twisted
 jinja2==3.1.2
     # via -r requirements.in
 markupsafe==2.1.3
     # via jinja2
+pyasn1==0.5.0
+    # via
+    #   pyasn1-modules
+    #   service-identity
+pyasn1-modules==0.3.0
+    # via service-identity
+pycparser==2.21
+    # via cffi
+pyopenssl==23.2.0
+    # via twisted
 pywatchman==1.4.1
     # via -r requirements.in
+service-identity==23.1.0
+    # via twisted
+six==1.16.0
+    # via automat
 sqlparse==0.4.4
     # via django
+twisted[tls]==23.8.0
+    # via daphne
+txaio==23.1.1
+    # via autobahn
+typing-extensions==4.7.1
+    # via twisted
+zope-interface==6.0
+    # via twisted
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
