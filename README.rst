@@ -20,6 +20,13 @@ django-browser-reload
 
 Automatically reload your browser in development.
 
+----
+
+**Work smarter and faster** with my book `Boost Your Django DX <https://adamchainz.gumroad.com/l/byddx>`__ which covers django-browser-reload and many other tools.
+I wrote django-browser-reload whilst working on the book!
+
+----
+
 Requirements
 ------------
 
@@ -41,14 +48,6 @@ Your browser needs to support:
 
   .. |SharedWorker| replace:: ``SharedWorker``
   __ https://developer.mozilla.org/en-US/docs/Web/API/SharedWorker#browser_compatibility
-
-----
-
-**Want to work smarter and faster?**
-Check out my book `Boost Your Django DX <https://adamchainz.gumroad.com/l/byddx>`__ which covers django-browser-reload and many other tools.
-I wrote django-browser-reload whilst working on the book!
-
-----
 
 Installation
 ------------
