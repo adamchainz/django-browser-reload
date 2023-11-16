@@ -2,6 +2,9 @@
 Changelog
 =========
 
+1.12.1 (2023-11-16)
+-------------------
+
 * Fix ASGI compatibility on Python 3.12.
 
 1.12.0 (2023-10-11)
