@@ -9,3 +9,13 @@ body {
 .emoji {
   font-size: 200px;
 }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: cornsilk;
+  }
+
+  body {
+    background-color: #121212;
+  }
+}
