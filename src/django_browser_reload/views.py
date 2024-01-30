@@ -150,9 +150,10 @@ def events(request: HttpRequest) -> HttpResponseBase:
     if not request.accepts("text/event-stream"):
         return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
-    event_stream: Callable[[], AsyncGenerator[bytes, None]] | Callable[
-        [], Generator[bytes, None, None]
-    ]
+    event_stream: (
+        Callable[[], AsyncGenerator[bytes, None]]
+        | Callable[[], Generator[bytes, None, None]]
+    )
 
     if isinstance(request, ASGIRequest):
         if django.VERSION < (4, 2):
