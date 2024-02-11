@@ -28,8 +28,8 @@ from django.template.autoreload import (
     get_template_directories as django_template_directories,
 )
 from django.template.backends.base import BaseEngine
-from django.utils.autoreload import autoreload_started
 from django.utils.autoreload import BaseReloader
+from django.utils.autoreload import autoreload_started
 from django.utils.autoreload import file_changed
 from django.utils.crypto import get_random_string
 
