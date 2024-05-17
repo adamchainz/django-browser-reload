@@ -15,8 +15,10 @@ def django_browser_reload_script() -> str:
             + ' data-worker-script-path="{}"'
             + ' data-events-path="{}"'
             + " defer></script>"
+            + '<link rel="stylesheet" href="{}">'
         ),
         static("django-browser-reload/reload-listener.js"),
         static("django-browser-reload/reload-worker.js"),
         reverse("django_browser_reload:events"),
+        static("django-browser-reload/django-browser-reload.css"),
     )
