@@ -32,7 +32,7 @@ Requirements
 
 Python 3.8 to 3.12 supported.
 
-Django 3.2 to 5.0 supported.
+Django 3.2 to 5.1 supported.
 
 WSGI supported on all Django versions. ASGI supported on Django 4.2+.
 
