@@ -8,11 +8,10 @@ requires = [
 name = "django-browser-reload"
 version = "1.12.1"
 description = "Automatically reload your browser in development."
-readme = { file = "README.rst", content-type = "text/x-rst" }
+readme = "README.rst"
 keywords = [
   "Django",
 ]
-license = { text = "MIT" }
 authors = [
   { name = "Adam Johnson", email = "me@adamj.eu" },
 ]
