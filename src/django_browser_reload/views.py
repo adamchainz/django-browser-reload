@@ -82,7 +82,7 @@ def _is_jinja_backend(backend: BaseEngine) -> bool:
     )
 
 
-def static_finder_storages() -> Generator[FileSystemStorage, None, None]:
+def static_finder_storages() -> Generator[FileSystemStorage]:
     for finder in get_finders():
         if not isinstance(
             finder, (AppDirectoriesFinder, FileSystemFinder)
@@ -150,10 +150,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
     if not request.accepts("text/event-stream"):
         return HttpResponse(status=HTTPStatus.NOT_ACCEPTABLE)
 
-    event_stream: (
-        Callable[[], AsyncGenerator[bytes, None]]
-        | Callable[[], Generator[bytes, None, None]]
-    )
+    event_stream: Callable[[], AsyncGenerator[bytes]] | Callable[[], Generator[bytes]]
 
     if isinstance(request, ASGIRequest):
         if django.VERSION < (4, 2):
@@ -163,7 +160,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
                 content_type="text/plain",
             )
 
-        async def event_stream() -> AsyncGenerator[bytes, None]:
+        async def event_stream() -> AsyncGenerator[bytes]:
             while True:
                 await asyncio.sleep(PING_DELAY)
                 yield message("ping", versionId=version_id)
@@ -174,7 +171,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
 
     else:
 
-        def event_stream() -> Generator[bytes, None, None]:
+        def event_stream() -> Generator[bytes]:
             while True:
                 yield message("ping", versionId=version_id)
 
