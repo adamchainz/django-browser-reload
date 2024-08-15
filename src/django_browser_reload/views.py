@@ -187,3 +187,12 @@ def events(request: HttpRequest) -> HttpResponseBase:
     # Set a content-encoding to bypass GzipMiddleware etc.
     response["content-encoding"] = ""
     return response
+
+
+if django.VERSION >= (5, 1):
+    # isort: off
+    from django.contrib.auth.decorators import login_not_required  # type: ignore [attr-defined]
+
+    # isort: on
+
+    events = login_not_required(events)

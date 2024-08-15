@@ -2,6 +2,10 @@
 Changelog
 =========
 
+* Mark the view as public with ``@login_not_required`` on Django 5.1, for compatibility with ``LoginRequiredMiddleware``.
+
+  Thanks to Macktireh Abdi Soubaneh for the report in `Issue #281 <https://github.com/adamchainz/django-browser-reload/issues/281>`__.
+
 1.13.0 (2024-06-19)
 -------------------
 
