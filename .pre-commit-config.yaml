@@ -82,3 +82,7 @@ repos:
   - id: mypy
     additional_dependencies:
     - django-stubs==5.0.4
+- repo: https://github.com/adamchainz/djade-pre-commit
+  rev: 1.0.0
+  hooks:
+  - id: djade
