@@ -3,12 +3,12 @@ from __future__ import annotations
 import asyncio
 import json
 import threading
+from collections.abc import AsyncGenerator
+from collections.abc import Generator
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any
-from typing import AsyncGenerator
 from typing import Callable
-from typing import Generator
 
 import django
 from django.conf import settings
