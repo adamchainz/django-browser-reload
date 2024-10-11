@@ -2,6 +2,9 @@
 Changelog
 =========
 
+1.16.0 (2024-10-11)
+-------------------
+
 * Drop Python 3.8 support.
 
 * Support Python 3.13.
