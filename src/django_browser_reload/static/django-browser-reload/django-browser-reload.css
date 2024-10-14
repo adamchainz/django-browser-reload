@@ -1,0 +1,42 @@
+#djangoBrowserReloadToggle {
+  display: flex;
+  flex-direction: row;
+}
+#djangoBrowserReloadToggle > * {
+  color: #f1f1f1;
+  font-size: 1.5rem;
+  line-height: 1.5rem;
+  font-weight: bold;
+  font-family: "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
+}
+#djangoBrowserReloadToggle.djbr-disabled > * {
+  text-decoration: line-through;
+}
+#djangoBrowserReloadToggle > span {
+  color: #157a53;
+}
+
+#djangoBrowserReloadContainer {
+  opacity: 0.1;
+  position: fixed;
+  bottom: 0;
+  cursor: move;
+  border: 1px solid white;
+  background-color: black;
+  border-bottom: 0;
+  padding: 3px;
+  z-index: 999;
+}
+#djangoBrowserReloadContainer:hover {
+  opacity: 0.9;
+  border: 1px solid #111;
+  background-color: #f1f1f1;
+}
+#djangoBrowserReloadContainer:hover #djangoBrowserReloadToggle > * {
+  color: black;
+}
+#djangoBrowserReloadContainer:hover #djangoBrowserReloadToggle > span {
+  color: #0c4a32;
+}
