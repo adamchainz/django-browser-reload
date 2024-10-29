@@ -24,12 +24,6 @@ repos:
   rev: 1.4.1
   hooks:
   - id: tox-ini-fmt
-- repo: https://github.com/pre-commit/mirrors-prettier
-  rev: v4.0.0-alpha.8
-  hooks:
-    - id: prettier
-      types_or:
-        - css
 - repo: https://github.com/standard/standard
   rev: v17.1.2
   hooks:
