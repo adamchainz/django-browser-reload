@@ -4,9 +4,7 @@ import time
 from http import HTTPStatus
 from pathlib import Path
 from unittest import mock
-from unittest import skipIf
 
-import django
 from django.conf import settings
 from django.http import StreamingHttpResponse
 from django.middleware.gzip import GZipMiddleware
@@ -87,7 +85,9 @@ class EventsTests(SimpleTestCase):
         assert response.status_code == HTTPStatus.NOT_FOUND
 
     def test_fail_not_accepted(self):
-        response = self.client.get("/__reload__/events/", HTTP_ACCEPT="text/html")
+        response = self.client.get(
+            "/__reload__/events/", headers={"accept": "text/html"}
+        )
 
         assert response.status_code == HTTPStatus.NOT_ACCEPTABLE
 
@@ -133,7 +133,7 @@ class EventsTests(SimpleTestCase):
 
     def test_success_template_change_with_gzip(self):
         middleware = GZipMiddleware(views.events)
-        request = RequestFactory(HTTP_ACCEPT_ENCODING="gzip").get("/")
+        request = RequestFactory(headers={"accept-encoding": "gzip"}).get("/")
         response = middleware(request)
         assert isinstance(response, StreamingHttpResponse)
         views.should_reload_event.set()
@@ -147,9 +147,6 @@ class EventsTests(SimpleTestCase):
         event = next(response_iterable)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
-
-
-django_4_2_plus = skipIf(django.VERSION < (4, 2), "Requires Django 4.2+")
 
 
 @override_settings(DEBUG=True)
@@ -167,7 +164,6 @@ class AsyncEventsTests(SimpleTestCase):
 
         assert response.status_code == HTTPStatus.NOT_ACCEPTABLE
 
-    @django_4_2_plus
     async def test_success_ping(self):
         response = await self.async_client.get("/__reload__/events/")
         assert isinstance(response, StreamingHttpResponse)
@@ -182,7 +178,6 @@ class AsyncEventsTests(SimpleTestCase):
             + b'"}\n\n'
         )
 
-    @django_4_2_plus
     @mock.patch.object(views, "PING_DELAY", 0.001)
     async def test_success_ping_twice(self):
         response = await self.async_client.get("/__reload__/events/")
@@ -195,7 +190,6 @@ class AsyncEventsTests(SimpleTestCase):
         event2 = await anext(response_iter)
         assert event1 == event2
 
-    @django_4_2_plus
     async def test_success_template_change(self):
         response = await self.async_client.get("/__reload__/events/")
         assert isinstance(response, StreamingHttpResponse)
@@ -209,11 +203,3 @@ class AsyncEventsTests(SimpleTestCase):
         event = await anext(response_iter)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
-
-    @skipIf(django.VERSION >= (4, 2), "Requires Django < 4.2")
-    async def test_fail_old_django(self):
-        response = await self.async_client.get("/__reload__/events/")
-
-        assert response.status_code == HTTPStatus.NOT_IMPLEMENTED
-        assert response.headers["content-type"] == "text/plain"
-        assert response.content == b"ASGI requires Django 4.2+"

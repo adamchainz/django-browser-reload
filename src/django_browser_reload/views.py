@@ -153,12 +153,6 @@ def events(request: HttpRequest) -> HttpResponseBase:
     event_stream: Callable[[], AsyncGenerator[bytes]] | Callable[[], Generator[bytes]]
 
     if isinstance(request, ASGIRequest):
-        if django.VERSION < (4, 2):
-            return HttpResponse(
-                "ASGI requires Django 4.2+",
-                status=HTTPStatus.NOT_IMPLEMENTED,
-                content_type="text/plain",
-            )
 
         async def event_stream() -> AsyncGenerator[bytes]:
             while True:
