@@ -4,9 +4,7 @@ import time
 from http import HTTPStatus
 from pathlib import Path
 from unittest import mock
-from unittest import skipIf
 
-import django
 from django.conf import settings
 from django.http import StreamingHttpResponse
 from django.middleware.gzip import GZipMiddleware
@@ -205,11 +203,3 @@ class AsyncEventsTests(SimpleTestCase):
         event = await anext(response_iter)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
-
-    @skipIf(django.VERSION >= (4, 2), "Requires Django < 4.2")
-    async def test_fail_old_django(self):
-        response = await self.async_client.get("/__reload__/events/")
-
-        assert response.status_code == HTTPStatus.NOT_IMPLEMENTED
-        assert response.headers["content-type"] == "text/plain"
-        assert response.content == b"ASGI requires Django 4.2+"
