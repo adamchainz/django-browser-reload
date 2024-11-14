@@ -5,6 +5,8 @@ let eventsPath = null
 let port = null
 let currentVersionId = null
 let eventSource = null
+let debounce_reload = false
+
 
 addEventListener('connect', (event) => {
   // Only keep one active port, for whichever tab was last loaded.
@@ -98,6 +100,11 @@ const connectToEvents = () => {
       }
 
       currentVersionId = message.versionId
+      // currentVersionId was null, if django source change
+      if (!debounce_reload){
+        port.postMessage('Reload')
+        debounce_reload = true
+      }
     } else if (message.type === 'reload') {
       port.postMessage('Reload')
     }
