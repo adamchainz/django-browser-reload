@@ -14,11 +14,11 @@
 
     worker.port.addEventListener('message', (event) => {
       if (event.data === 'Reload') {
-          setTimeout(() => {
-            // add some delay for webpack to poll
-            location.reload()
-          }, 1000)
-          //location.reload()
+        setTimeout(() => {
+          // add some delay for webpack to poll
+          location.reload()
+        }, 1000)
+        // location.reload()
       }
     })
 
