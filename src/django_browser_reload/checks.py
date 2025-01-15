@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-from typing import List
-
 from django.core.checks import Error
 
 
-def check_django_browser_reload_setup(**kwargs) -> list[Error]:
+def check_django_browser_reload_setup(**kwargs: dict) -> list[Error]:
     """
     Check if the necessary settings for django-browser-reload are correctly configured.
     """
     from django.conf import settings
 
-    errors = []
+    errors: list[Error] = []
 
     if "django.contrib.staticfiles" not in settings.INSTALLED_APPS:
         errors.append(
