@@ -5,7 +5,7 @@ from typing import List
 from django.core.checks import Error
 
 
-def check_django_browser_reload_setup(**kwargs) -> List[Error]:
+def check_django_browser_reload_setup(**kwargs) -> list[Error]:
     """
     Check if the necessary settings for django-browser-reload are correctly configured.
     """
