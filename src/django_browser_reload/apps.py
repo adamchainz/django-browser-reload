@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from django.apps import AppConfig
+from django.core import checks
+
+from .checks import check_django_browser_reload_setup
 
 
 class DjangoBrowserReloadAppConfig(AppConfig):
@@ -10,3 +13,4 @@ class DjangoBrowserReloadAppConfig(AppConfig):
     def ready(self) -> None:
         # Ensure signal always connected
         from django_browser_reload import views  # noqa
+        checks.register(check_django_browser_reload_setup, checks.Tags.compatibility)
