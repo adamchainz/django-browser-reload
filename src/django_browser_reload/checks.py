@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from typing import List
+
 from django.core.checks import Error
 
 
-def check_django_browser_reload_setup(**kwargs):
+def check_django_browser_reload_setup(**kwargs) -> List[Error]:
     """
     Check if the necessary settings for django-browser-reload are correctly configured.
     """
