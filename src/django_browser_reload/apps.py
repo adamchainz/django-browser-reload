@@ -13,4 +13,5 @@ class DjangoBrowserReloadAppConfig(AppConfig):
     def ready(self) -> None:
         # Ensure signal always connected
         from django_browser_reload import views  # noqa
+
         checks.register(check_django_browser_reload_setup, checks.Tags.compatibility)

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.core.checks import run_checks
 from django.test import SimpleTestCase
 from django.test.utils import override_settings
@@ -22,7 +24,7 @@ class TestDjangoBrowserReloadChecks(SimpleTestCase):
     @override_settings(
         INSTALLED_APPS=["django.contrib.staticfiles"],
         MIDDLEWARE=["django_browser_reload.middleware.BrowserReloadMiddleware"],
-        STATICFILES_FINDERS=["django.contrib.staticfiles.finders.AppDirectoriesFinder"]
+        STATICFILES_FINDERS=["django.contrib.staticfiles.finders.AppDirectoriesFinder"],
     )
     def test_all_correctly_installed(self):
         errors = run_checks()
