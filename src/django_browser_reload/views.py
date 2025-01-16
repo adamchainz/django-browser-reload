@@ -76,10 +76,10 @@ def _is_jinja_backend(backend: BaseEngine) -> bool:
     """
     Cautious check for Jinja backend, avoiding import which relies on jinja2
     """
-    return any(
-        f"{c.__module__}.{c.__qualname__}" == "django.template.backends.jinja2.Jinja2"
-        for c in backend.__class__.__mro__
-    )
+    if not hasattr(backend, "env"):
+        return False
+
+    return backend.env.__module__.startswith("jinja2.")  # type: ignore [no-any-return]
 
 
 def static_finder_storages() -> Generator[FileSystemStorage]:
