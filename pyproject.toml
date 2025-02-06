@@ -6,7 +6,7 @@ requires = [
 
 [project]
 name = "django-browser-reload"
-version = "1.17.0"
+version = "1.18.0"
 description = "Automatically reload your browser in development."
 readme = "README.rst"
 keywords = [
