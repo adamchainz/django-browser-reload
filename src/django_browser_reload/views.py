@@ -185,7 +185,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
 
 if django.VERSION >= (5, 1):
     # isort: off
-    from django.contrib.auth.decorators import login_not_required  # type: ignore [attr-defined]
+    from django.contrib.auth.decorators import login_not_required
 
     # isort: on
 
