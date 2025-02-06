@@ -1,13 +1,13 @@
 Example Project
 ===============
 
-Use Python 3.12 to set up with these commands:
+Use Python 3.13 to set up with these commands:
 
 .. code-block:: sh
 
    python -m venv .venv
    source .venv/bin/activate
-   python -m pip install -r requirements.txt -e ..
+   python -m pip install -e .. -r requirements.txt
 
 Run the sync WSGI server with:
 
