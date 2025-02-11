@@ -46,7 +46,6 @@ urls.Repository = "https://github.com/adamchainz/django-browser-reload"
 [dependency-groups]
 test = [
   "coverage[toml]",
-  "django",
   "jinja2",
   "pytest",
   "pytest-django",
