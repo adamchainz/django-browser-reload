@@ -78,6 +78,9 @@ class OnFileChangedTests(SimpleTestCase):
 
 @override_settings(DEBUG=True)
 class EventsTests(SimpleTestCase):
+    def setUp(self):
+        views.should_exit_event.clear()
+
     @override_settings(DEBUG=False)
     def test_fail_not_debug(self):
         response = self.client.get("/__reload__/events/")
@@ -147,6 +150,21 @@ class EventsTests(SimpleTestCase):
         event = next(response_iterable)
         assert event == b'data: {"type": "reload"}\n\n'
         assert not views.should_reload_event.is_set()
+
+    def test_close_connection_on_should_close_set(self):
+        response = self.client.get("/__reload__/events/")
+        assert isinstance(response, StreamingHttpResponse)
+
+        assert response.status_code == HTTPStatus.OK
+        assert response.headers["content-type"] == "text/event-stream"
+        response_iterable = iter(response)
+
+        # Set the should_exit_event
+        views.should_exit_event.set()
+
+        # The the iteration should stop
+        with self.assertRaises(StopIteration):
+            next(response_iterable)
 
 
 @override_settings(DEBUG=True)
