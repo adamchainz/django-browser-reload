@@ -76,6 +76,13 @@ class OnFileChangedTests(SimpleTestCase):
         views.should_reload_event.clear()
 
 
+class HandleSigingTests(SimpleTestCase):
+    def test_handle_sigint(self):
+        views.handle_sigint(0, None)
+        assert views.should_exit_event.is_set()
+        views.should_exit_event.clear()
+
+
 @override_settings(DEBUG=True)
 class EventsTests(SimpleTestCase):
     def setUp(self):
