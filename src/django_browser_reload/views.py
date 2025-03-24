@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import signal
 import threading
 from collections.abc import AsyncGenerator
 from collections.abc import Generator
@@ -40,6 +41,16 @@ version_id = get_random_string(32)
 
 # Communicate template changes to the running polls thread
 should_reload_event = threading.Event()
+
+# Communicate the connection should close
+should_exit_event = threading.Event()
+
+
+def handle_sigint(signum: int, frame: Any) -> None:
+    should_exit_event.set()
+
+
+signal.signal(signal.SIGINT, handle_sigint)
 
 reload_timer: threading.Timer | None = None
 
@@ -155,7 +166,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
     if isinstance(request, ASGIRequest):
 
         async def event_stream() -> AsyncGenerator[bytes]:
-            while True:
+            while not should_exit_event.is_set():
                 await asyncio.sleep(PING_DELAY)
                 yield message("ping", versionId=version_id)
 
@@ -166,7 +177,7 @@ def events(request: HttpRequest) -> HttpResponseBase:
     else:
 
         def event_stream() -> Generator[bytes]:
-            while True:
+            while not should_exit_event.is_set():
                 yield message("ping", versionId=version_id)
 
                 should_reload = should_reload_event.wait(timeout=PING_DELAY)
