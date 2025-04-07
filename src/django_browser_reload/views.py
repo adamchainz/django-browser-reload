@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 import signal
+import sys
 import threading
 from collections.abc import AsyncGenerator
 from collections.abc import Generator
@@ -48,6 +49,7 @@ should_exit_event = threading.Event()
 
 def handle_sigint(signum: int, frame: Any) -> None:
     should_exit_event.set()
+    sys.exit(0)
 
 
 signal.signal(signal.SIGINT, handle_sigint)

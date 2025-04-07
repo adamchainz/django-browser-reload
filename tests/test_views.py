@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import time
 from http import HTTPStatus
 from pathlib import Path
@@ -77,10 +78,12 @@ class OnFileChangedTests(SimpleTestCase):
 
 
 class HandleSigingTests(SimpleTestCase):
-    def test_handle_sigint(self):
+    @mock.patch.object(sys, "exit")
+    def test_handle_sigint(self, mock_exit):
         views.handle_sigint(0, None)
         assert views.should_exit_event.is_set()
         views.should_exit_event.clear()
+        mock_exit.assert_called_once_with(0)
 
 
 @override_settings(DEBUG=True)
