@@ -45,7 +45,7 @@ class OnFileChangedTests(SimpleTestCase):
         time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
         assert not views.should_reload_event.is_set()
 
-    def test_django_template(self):
+    def test_django_template_default(self):
         path = settings.BASE_DIR / "templates" / "django" / "example.html"
 
         result = views.on_file_changed(file_path=path)
@@ -55,7 +55,29 @@ class OnFileChangedTests(SimpleTestCase):
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
 
-    def test_jinja_template(self):
+    def test_django_template_enabled(self):
+        with self.settings(DJANGO_BROWSER_RELOAD_IGNORE=set()):
+            path = settings.BASE_DIR / "templates" / "django" / "example.html"
+
+            result = views.on_file_changed(file_path=path)
+
+            time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+            assert result is True
+            assert views.should_reload_event.is_set()
+            views.should_reload_event.clear()
+
+    def test_django_template_disabled(self):
+        with self.settings(DJANGO_BROWSER_RELOAD_IGNORE={"templates"}):
+            path = settings.BASE_DIR / "templates" / "django" / "example.html"
+
+            result = views.on_file_changed(file_path=path)
+
+            time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+            assert result is True
+            assert not views.should_reload_event.is_set()
+            views.should_reload_event.clear()
+
+    def test_jinja_template_default(self):
         path = settings.BASE_DIR / "templates" / "jinja" / "example.html"
 
         result = views.on_file_changed(file_path=path)
@@ -65,7 +87,29 @@ class OnFileChangedTests(SimpleTestCase):
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
 
-    def test_static_asset(self):
+    def test_jinja_template_enabled(self):
+        with self.settings(DJANGO_BROWSER_RELOAD_IGNORE=set()):
+            path = settings.BASE_DIR / "templates" / "jinja" / "example.html"
+
+            result = views.on_file_changed(file_path=path)
+
+            time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+            assert result is True
+            assert views.should_reload_event.is_set()
+            views.should_reload_event.clear()
+
+    def test_jinja_template_disabled(self):
+        with self.settings(DJANGO_BROWSER_RELOAD_IGNORE={"templates"}):
+            path = settings.BASE_DIR / "templates" / "jinja" / "example.html"
+
+            result = views.on_file_changed(file_path=path)
+
+            time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+            assert result is True
+            assert not views.should_reload_event.is_set()
+            views.should_reload_event.clear()
+
+    def test_static_asset_default(self):
         path = settings.BASE_DIR / "static" / "example.css"
 
         result = views.on_file_changed(file_path=path)
@@ -74,6 +118,28 @@ class OnFileChangedTests(SimpleTestCase):
         assert result is True
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
+
+    def test_static_asset_enabled(self):
+        with self.settings(DJANGO_BROWSER_RELOAD_IGNORE=set()):
+            path = settings.BASE_DIR / "static" / "example.css"
+
+            result = views.on_file_changed(file_path=path)
+
+            time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+            assert result is True
+            assert views.should_reload_event.is_set()
+            views.should_reload_event.clear()
+
+    def test_static_asset_disabled(self):
+        with self.settings(DJANGO_BROWSER_RELOAD_IGNORE={"static"}):
+            path = settings.BASE_DIR / "static" / "example.css"
+
+            result = views.on_file_changed(file_path=path)
+
+            time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+            assert result is True
+            assert not views.should_reload_event.is_set()
+            views.should_reload_event.clear()
 
 
 @override_settings(DEBUG=True)
