@@ -35,7 +35,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "example.urls"
 
-SECRET_KEY = "django-insecure-WCglZv2CA4v59K24bXfADwNDXc3HlwDY"
+SECRET_KEY = "django-insecure-WCglZv2CA4v59K24bXfADwNDXc3HlwDY"  # typos: ignore
 
 TEMPLATES = [
     {
