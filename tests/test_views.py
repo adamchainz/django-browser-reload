@@ -8,15 +8,12 @@ from unittest import mock
 from django.conf import settings
 from django.http import StreamingHttpResponse
 from django.middleware.gzip import GZipMiddleware
-from django.test import RequestFactory
-from django.test import SimpleTestCase
-from django.test import override_settings
+from django.test import RequestFactory, SimpleTestCase, override_settings
 from django.utils.autoreload import BaseReloader
 
 import django_browser_reload
 from django_browser_reload import views
-from tests.compat import aiter
-from tests.compat import anext
+from tests.compat import aiter, anext
 
 
 class OnAutoreloadStartedTests(SimpleTestCase):
