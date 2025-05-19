@@ -1,13 +1,9 @@
 from __future__ import annotations
 
 from django.core.exceptions import MiddlewareNotUsed
-from django.http import HttpRequest
-from django.http import HttpResponse
-from django.http import StreamingHttpResponse
+from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from django.http.response import HttpResponseBase
-from django.test import RequestFactory
-from django.test import SimpleTestCase
-from django.test import override_settings
+from django.test import RequestFactory, SimpleTestCase, override_settings
 
 from django_browser_reload.middleware import BrowserReloadMiddleware
 

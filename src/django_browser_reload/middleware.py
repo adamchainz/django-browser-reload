@@ -4,12 +4,10 @@ import re
 from collections.abc import Awaitable
 from typing import Callable
 
-from asgiref.sync import iscoroutinefunction
-from asgiref.sync import markcoroutinefunction
+from asgiref.sync import iscoroutinefunction, markcoroutinefunction
 from django.conf import settings
 from django.core.exceptions import MiddlewareNotUsed
-from django.http import HttpRequest
-from django.http import HttpResponse
+from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 
 from django_browser_reload.jinja import django_browser_reload_script

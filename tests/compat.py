@@ -3,8 +3,8 @@ from __future__ import annotations
 import sys
 
 if sys.version_info >= (3, 10):
-    aiter = aiter
-    anext = anext
+    aiter = aiter  # noqa: F821
+    anext = anext  # noqa: F821
 else:
 
     def aiter(obj):
