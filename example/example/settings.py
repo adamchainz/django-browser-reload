@@ -4,6 +4,10 @@ import os
 from pathlib import Path
 from typing import Any
 
+# Hide development server warning
+# https://docs.djangoproject.com/en/stable/ref/django-admin/#envvar-DJANGO_RUNSERVER_HIDE_WARNING
+os.environ["DJANGO_RUNSERVER_HIDE_WARNING"] = "true"
+
 asgi = os.environ.get("ASGI") == "1"
 
 # 1. Django Core Settings

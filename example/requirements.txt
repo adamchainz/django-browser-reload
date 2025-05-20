@@ -4,26 +4,26 @@ asgiref==3.8.1
     # via
     #   daphne
     #   django
-attrs==25.1.0
+attrs==25.3.0
     # via
     #   service-identity
     #   twisted
 autobahn==24.4.2
     # via daphne
-automat==24.8.1
+automat==25.4.16
     # via twisted
 cffi==1.17.1 ; platform_python_implementation != 'PyPy'
     # via cryptography
 constantly==23.10.4
     # via twisted
-cryptography==44.0.0
+cryptography==45.0.2
     # via
     #   autobahn
     #   pyopenssl
     #   service-identity
-daphne==4.1.2
+daphne==4.2.0
     # via -r requirements.in
-django==5.1.6
+django==5.2.1
     # via -r requirements.in
 hyperlink==21.0.0
     # via
@@ -35,7 +35,7 @@ idna==3.10
     #   twisted
 incremental==24.7.2
     # via twisted
-jinja2==3.1.5
+jinja2==3.1.6
     # via -r requirements.in
 markupsafe==3.0.2
     # via jinja2
@@ -43,17 +43,17 @@ pyasn1==0.6.1
     # via
     #   pyasn1-modules
     #   service-identity
-pyasn1-modules==0.4.1
+pyasn1-modules==0.4.2
     # via service-identity
 pycparser==2.22 ; platform_python_implementation != 'PyPy'
     # via cffi
-pyopenssl==25.0.0
+pyopenssl==25.1.0
     # via twisted
 pywatchman==2.0.0
     # via -r requirements.in
 service-identity==24.2.0
     # via twisted
-setuptools==75.8.0
+setuptools==80.8.0
     # via
     #   autobahn
     #   incremental
@@ -64,9 +64,9 @@ twisted==24.11.0
     # via daphne
 txaio==23.1.1
     # via autobahn
-typing-extensions==4.12.2
+typing-extensions==4.13.2
     # via twisted
-tzdata==2025.1 ; sys_platform == 'win32'
+tzdata==2025.2 ; sys_platform == 'win32'
     # via django
 zope-interface==7.2
     # via twisted
