@@ -13,13 +13,13 @@ Run the sync WSGI server with:
 
 .. code-block:: sh
 
-   DEBUG=1 python manage.py runserver
+   python manage.py runserver
 
 Run the async ASGI server with:
 
 .. code-block:: sh
 
-   ASGI=1 DEBUG=1 python manage.py runserver
+   ASGI=1 python manage.py runserver
 
 Open it at http://127.0.0.1:8000/ .
 

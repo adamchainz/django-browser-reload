@@ -19,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 DATABASES: dict[str, dict[str, Any]] = {}
 
-DEBUG = os.environ.get("DEBUG", "") == "1"
+DEBUG = True
 
 INSTALLED_APPS = [
     # Project
