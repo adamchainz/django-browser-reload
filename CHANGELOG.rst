@@ -7,6 +7,10 @@ Unreleased
 
 * Support Python 3.14.
 
+* Support the django-jinja template backend.
+
+  Thanks to Jake Howard in `PR #309 <https://github.com/adamchainz/django-browser-reload/pull/309>`__.
+
 1.18.0 (2025-02-06)
 -------------------
 
