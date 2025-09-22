@@ -34,7 +34,7 @@ Python 3.9 to 3.14 supported.
 
 Django 4.2 to 6.0 supported.
 
-WSGI supported on all Django versions. ASGI supported on Django 4.2+.
+Both WSGI and ASGI are supported.
 
 Your browser needs to support:
 
