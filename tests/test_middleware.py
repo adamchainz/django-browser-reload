@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import secrets
+
 from django.core.exceptions import MiddlewareNotUsed
 from django.http import HttpRequest, HttpResponse, StreamingHttpResponse
 from django.http.response import HttpResponseBase
@@ -132,5 +134,25 @@ class BrowserReloadMiddlewareTests(SimpleTestCase):
             + b' data-worker-script-path="/static/django-browser-reload/'
             + b'reload-worker.js"'
             + b' data-events-path="/__reload__/events/" defer></script>'
+            + b"</body></html>"
+        )
+
+    def test_csp_nonce(self):
+        nonce = secrets.token_urlsafe(16)
+        self.request._csp_nonce = nonce  # type: ignore[attr-defined]
+        self.response = HttpResponse("<html><body></body></html>")
+        self.response["Content-Length"] = len(self.response.content)
+
+        response = self.middleware(self.request)
+
+        assert isinstance(response, HttpResponse)
+        assert response.content == (
+            b"<html><body>"
+            + b'<script src="/static/django-browser-reload/reload-listener.js"'
+            + b' data-worker-script-path="/static/django-browser-reload/'
+            + b'reload-worker.js"'
+            + b' data-events-path="/__reload__/events/" defer nonce="'
+            + nonce.encode()
+            + b'"></script>'
             + b"</body></html>"
         )
