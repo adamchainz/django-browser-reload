@@ -103,23 +103,25 @@ All done! 📯
 
 Try installing `django-watchfiles <https://github.com/adamchainz/django-watchfiles>`__ as well, for faster and more efficient reloading.
 
-What It Does
+Usage
+-----
+
+Once set up as above, just run ``runserver`` with the ``DEBUG`` setting set to ``True``, and open your site in a browser.
+When you modify Python code, templates, or static assets, the page will automatically reload.
+Welcome to much faster iteration times!
+
+If you open multiple tabs, only the most recently used tab will reload.
+
+django-browser works by adding a script tag into HTML responses, just before ``</body>``.
+This script connects back to the development server and receives events that tell it when to reload.
+These events are triggered through server restarts and ``runserver``\’s autoreload system.
+See below for a more detailed explanation, under “How It Works”.
+
+Template tag
 ------------
 
-When ``DEBUG`` is ``True``, the template tag includes a small script.
-This script connects back to the development server and will automatically reload when static assets or templates are modified, or after ``runserver`` restarts.
-The reload only happens in the most recently opened tab.
-
-Example Project
----------------
-
-See the `example project <https://github.com/adamchainz/django-browser-reload/tree/main/example>`__ in the ``example/`` directory of the GitHub repository.
-Start it up and modify its files to see the reloading in action.
-
-Template Tag
-------------
-
-If the middleware doesn’t work for you, you can also use a template tag to insert the script on relevant pages.
+You can also use a template tag to insert the script on relevant pages, instead of using the middleware.
+This may be useful if you want to restrict reloading to certain pages, or if the middleware doesn’t work for your page structure.
 The template tag has both Django templates and Jinja versions, and only outputs the script tag when ``DEBUG`` is ``True``.
 
 For **Django Templates**, load the tag and use it in your base template.
@@ -180,9 +182,16 @@ It can go anywhere, but it’s best just before ``</body>``:
       </body>
     </html>
 
-Ta-da!
+Example project
+---------------
 
-How It Works
+To demonstrate and test django-browser-reload on all kinds of assets, there is an example project included in the repository.
+Open |the example directory|__, follow the instructions in its README, and try it out.
+
+.. |the example directory| replace:: the ``example/`` directory
+__ https://github.com/adamchainz/django-browser-reload/tree/main/example
+
+How it works
 ------------
 
 Here’s a diagram:
@@ -198,7 +207,7 @@ Here’s a diagram:
                                       \     |     /
     Events View --------------------> Shared worker
 
-The template tag includes a listener script on each page.
+The middleware (or template tag) includes a listener script on each page.
 This listener script starts or connects to a |SharedWorker2|__, running a worker script.
 The worker script then connects to the events view in Django, using an |EventSource2|__ to receive server-sent events.
 
