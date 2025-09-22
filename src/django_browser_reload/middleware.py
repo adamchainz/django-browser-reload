@@ -45,17 +45,17 @@ class BrowserReloadMiddleware:
 
         response = self.get_response(request)
         assert isinstance(response, HttpResponseBase)
-        self.maybe_inject(response)
+        self.maybe_inject(request, response)
         return response
 
     async def __acall__(self, request: HttpRequest) -> HttpResponseBase:
         result = self.get_response(request)
         assert not isinstance(result, HttpResponseBase)  # type narrow
         response = await result
-        self.maybe_inject(response)
+        self.maybe_inject(request, response)
         return response
 
-    def maybe_inject(self, response: HttpResponseBase) -> None:
+    def maybe_inject(self, request: HttpRequest, response: HttpResponseBase) -> None:
         if (
             not settings.DEBUG
             or getattr(response, "streaming", False)
@@ -77,6 +77,14 @@ class BrowserReloadMiddleware:
         tag = match[0]
         tail = content[match.end() :]
 
-        response.content = head + django_browser_reload_script() + tag + tail
+        response.content = (
+            head
+            + django_browser_reload_script(
+                # As set by Django's ContentSecurityPolicyMiddleware
+                getattr(request, "_csp_nonce", None),
+            )
+            + tag
+            + tail
+        )
         if "content-length" in response.headers:
             response["content-length"] = len(response.content)

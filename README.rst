@@ -117,6 +117,8 @@ This script connects back to the development server and receives events that tel
 These events are triggered through server restarts and ``runserver``\’s autoreload system.
 See below for a more detailed explanation, under “How It Works”.
 
+On Django 6.0+ with ``ContentSecurityPolicyMiddleware``, the ``<script>`` tag will include `the Content Security Policy (CSP) nonce <https://docs.djangoproject.com/en/6.0/howto/csp/#nonce-config>`__.
+
 Template tag
 ------------
 
@@ -137,7 +139,10 @@ The tag can go anywhere, but it’s best just before ``</body>``:
      </body>
    </html>
 
-To add django-browser-reload to Django’s admin, do so in a template called ``admin/base_site.html``:
+On Django 6.0+, the ``<script>`` tag will include `the Content Security Policy (CSP) nonce <https://docs.djangoproject.com/en/6.0/howto/csp/#nonce-config>`__, if it’s present in the context.
+
+To add the template tag within Django’s admin, do so in a template called ``admin/base_site.html``, per Django’s documentation on `extending an overridden template <https://docs.djangoproject.com/en/4.0/howto/overriding-templates/#extending-an-overridden-template>`__.
+The template should look like:
 
 .. code-block:: html
 
@@ -149,8 +154,6 @@ To add django-browser-reload to Django’s admin, do so in a template called ``a
         {{ block.super }}
         {% django_browser_reload_script %}
     {% endblock %}
-
-This follows Django’s documentation on `extending an overridden template <https://docs.djangoproject.com/en/4.0/howto/overriding-templates/#extending-an-overridden-template>`__.
 
 For **Jinja Templates**, you need to perform two steps.
 First, load the tag function into the globals of your `custom environment <https://docs.djangoproject.com/en/stable/topics/templates/#django.template.backends.jinja2.Jinja2>`__:
@@ -181,6 +184,12 @@ It can go anywhere, but it’s best just before ``</body>``:
         {{ django_browser_reload_script() }}
       </body>
     </html>
+
+To use a CSP nonce, pass it to the function as ``nonce``:
+
+.. code-block:: jinja
+
+    {{ django_browser_reload_script(nonce=csp_nonce) }}
 
 Example project
 ---------------

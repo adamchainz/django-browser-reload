@@ -2,6 +2,10 @@
 Changelog
 =========
 
+* Add Content Security Policy (CSP) nonce support to the listener script tag, in both the middleware and the Jinja template tag.
+
+  `PR #340 <https://github.com/adamchainz/django-browser-reload/pull/340>`__.
+
 1.20.0 (2025-09-18)
 -------------------
 
