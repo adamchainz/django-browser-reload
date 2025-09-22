@@ -18,7 +18,7 @@ django-browser-reload
    :target: https://github.com/pre-commit/pre-commit
    :alt: pre-commit
 
-Automatically reload your browser in development.
+Automatically refresh your browser on changes to Python code, templates, or static files.
 
 ----
 
