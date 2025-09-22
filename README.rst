@@ -101,7 +101,7 @@ Installation
 
 All done! 📯
 
-For faster and more efficient reloading, also set up `Django’s built-in Watchman support <https://adamj.eu/tech/2021/01/20/efficient-reloading-in-djangos-runserver-with-watchman/>`__.
+Try installing `django-watchfiles <https://github.com/adamchainz/django-watchfiles>`__ as well, for faster and more efficient reloading.
 
 What It Does
 ------------
