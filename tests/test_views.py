@@ -13,7 +13,6 @@ from django.utils.autoreload import BaseReloader
 
 import django_browser_reload
 from django_browser_reload import views
-from tests.compat import aiter, anext
 
 
 class OnAutoreloadStartedTests(SimpleTestCase):
