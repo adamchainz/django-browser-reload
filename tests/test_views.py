@@ -36,7 +36,8 @@ class OnAutoreloadStartedTests(SimpleTestCase):
 
 class OnFileChangedTests(SimpleTestCase):
     def test_ignored(self):
-        views.on_file_changed(file_path=Path("/tmp/nothing"))
+        result = views.on_file_changed(file_path=Path("/tmp/nothing"))
+        assert result is None
 
         time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
         assert not views.should_reload_event.is_set()
@@ -70,6 +71,25 @@ class OnFileChangedTests(SimpleTestCase):
         assert result is True
         assert views.should_reload_event.is_set()
         views.should_reload_event.clear()
+
+    def test_python_file_in_templates_or_static(self):
+        # Force server reload when Python files are changed even if they are in
+        # templates or static directories
+        paths = [
+            settings.BASE_DIR / "templates" / "django" / "component.py",
+            settings.BASE_DIR / "templates" / "jinja" / "component.py",
+            settings.BASE_DIR / "static" / "component.py",
+        ]
+        for path in paths:
+            with self.subTest(path=path):
+                result = views.on_file_changed(file_path=path)
+
+                time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+                # Don't prevent Django from reloading
+                assert result is None
+                # But also reload the browser
+                assert views.should_reload_event.is_set()
+                views.should_reload_event.clear()
 
 
 @override_settings(DEBUG=True)
