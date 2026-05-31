@@ -1,25 +1,17 @@
 Example Project
 ===============
 
-Use uv to set up with these commands:
-
-.. code-block:: sh
-
-   uv venv
-   source .venv/bin/activate
-   uv pip install -e .. -r requirements.txt
-
 Run the sync WSGI server with:
 
 .. code-block:: sh
 
-   python manage.py runserver
+   uv run --group example manage.py runserver
 
 Run the async ASGI server with:
 
 .. code-block:: sh
 
-   ASGI=1 python manage.py runserver
+   ASGI=1 uv run --group example manage.py runserver
 
 Open it at http://127.0.0.1:8000/ .
 
