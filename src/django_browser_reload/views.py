@@ -8,8 +8,8 @@ from http import HTTPStatus
 from pathlib import Path
 from typing import Any
 
-import django
 from django.conf import settings
+from django.contrib.auth.decorators import login_not_required
 from django.contrib.staticfiles.finders import (
     AppDirectoriesFinder,
     FileSystemFinder,
@@ -140,6 +140,7 @@ def message(type_: str, **kwargs: Any) -> bytes:
 PING_DELAY = 1.0  # seconds
 
 
+@login_not_required
 def events(request: HttpRequest) -> HttpResponseBase:
     if not settings.DEBUG:
         raise Http404()
@@ -178,12 +179,3 @@ def events(request: HttpRequest) -> HttpResponseBase:
     # Set a content-encoding to bypass GzipMiddleware etc.
     response["content-encoding"] = ""
     return response
-
-
-if django.VERSION >= (5, 1):
-    # isort: off
-    from django.contrib.auth.decorators import login_not_required
-
-    # isort: on
-
-    events = login_not_required(events)

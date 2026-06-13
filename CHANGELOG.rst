@@ -2,6 +2,11 @@
 Changelog
 =========
 
+Unreleased
+----------
+
+* Drop Django 4.2 to 5.1 support.
+
 * Drop Python 3.9 support.
 
 1.21.0 (2025-09-22)

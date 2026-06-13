@@ -3,6 +3,7 @@ from __future__ import annotations
 import time
 from http import HTTPStatus
 from pathlib import Path
+from typing import Any
 from unittest import mock
 
 from django.conf import settings
@@ -89,7 +90,6 @@ class EventsTests(SimpleTestCase):
 
     def test_success_ping(self):
         response = self.client.get("/__reload__/events/")
-        assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
         assert response.headers["content-type"] == "text/event-stream"
@@ -104,7 +104,6 @@ class EventsTests(SimpleTestCase):
     @mock.patch.object(views, "PING_DELAY", 0.001)
     def test_success_ping_twice(self):
         response = self.client.get("/__reload__/events/")
-        assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
         assert response.headers["content-type"] == "text/event-stream"
@@ -115,7 +114,6 @@ class EventsTests(SimpleTestCase):
 
     def test_success_template_change(self):
         response = self.client.get("/__reload__/events/")
-        assert isinstance(response, StreamingHttpResponse)
         views.should_reload_event.set()
 
         assert response.status_code == HTTPStatus.OK
@@ -162,12 +160,11 @@ class AsyncEventsTests(SimpleTestCase):
 
     async def test_success_ping(self):
         response = await self.async_client.get("/__reload__/events/")
-        assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
         assert response.headers["content-type"] == "text/event-stream"
 
-        event = await anext(aiter(response))
+        event = await anext(aiter(response))  # type: ignore [arg-type]
         assert event == (
             b'data: {"type": "ping", "versionId": "'
             + views.version_id.encode()
@@ -177,23 +174,21 @@ class AsyncEventsTests(SimpleTestCase):
     @mock.patch.object(views, "PING_DELAY", 0.001)
     async def test_success_ping_twice(self):
         response = await self.async_client.get("/__reload__/events/")
-        assert isinstance(response, StreamingHttpResponse)
 
         assert response.status_code == HTTPStatus.OK
         assert response.headers["content-type"] == "text/event-stream"
-        response_iter = aiter(response)
+        response_iter: Any = aiter(response)  # type: ignore [arg-type]
         event1 = await anext(response_iter)
         event2 = await anext(response_iter)
         assert event1 == event2
 
     async def test_success_template_change(self):
         response = await self.async_client.get("/__reload__/events/")
-        assert isinstance(response, StreamingHttpResponse)
         views.should_reload_event.set()
 
         assert response.status_code == HTTPStatus.OK
         assert response.headers["content-type"] == "text/event-stream"
-        response_iter = aiter(response)
+        response_iter: Any = aiter(response)  # type: ignore [arg-type]
         # Skip version ID message
         await anext(response_iter)
         event = await anext(response_iter)
