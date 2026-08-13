@@ -5,6 +5,8 @@ Changelog
 Unreleased
 ----------
 
+* Support Python 3.15.
+
 * Add Django 6.1 support.
 
 * Drop Django 4.2 to 5.1 support.
