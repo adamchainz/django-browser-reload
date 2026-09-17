@@ -101,28 +101,41 @@ def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
 @receiver(file_changed, dispatch_uid="browser_reload")
 def on_file_changed(*, file_path: Path, **kwargs: Any) -> bool | None:
     # Returning True tells Django *not* to reload
-
     file_parents = file_path.parents
 
     # Django Templates
     for template_dir in django_template_directories():
         if template_dir in file_parents:
             trigger_reload_soon()
-            return True
+            return skip_server_restart(file_path)
 
     # Jinja Templates
     for template_dir in jinja_template_directories():
         if template_dir in file_parents:
             trigger_reload_soon()
-            return True
+            return skip_server_restart(file_path)
 
     # Static assets
     for storage in static_finder_storages():
         if Path(storage.location) in file_parents:
             trigger_reload_soon()
-            return True
+            return skip_server_restart(file_path)
 
     return None
+
+
+def skip_server_restart(file_path: Path) -> bool | None:
+    """
+    Return None if the server should be restarted and True otherwise.
+
+    This function is called from on_file_changed() where we already know that the file
+    is either a template or a static asset. By default, the server should not be
+    restarted. However, if the file is a Python file (such as with django-components),
+    we want to restart the server regardless.
+    """
+    if file_path.suffix == ".py":
+        return None
+    return True
 
 
 def message(type_: str, **kwargs: Any) -> bytes:
