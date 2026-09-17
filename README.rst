@@ -244,6 +244,9 @@ An internal Django signal indicates when a template file has changed.
 The events view receives this signal and sends an event to the worker, which triggers a reload.
 There is no smart filtering - if *any* template file changes, the view is reloaded.
 
+Python files are excluded from this template and static asset handling, even when stored in template or static directories, as done by django-components.
+Such changes restart the development server instead, which reloads the browser through the version ID described below.
+
 To reload when the server restarts, django-browser-reload uses a version ID.
 This ID is randomly generated when the view module is imported, so it will be different every time the server starts.
 When the server restarts, the worker’s ``EventSource`` reconnects with minimal delay.

@@ -37,9 +37,39 @@ class OnAutoreloadStartedTests(SimpleTestCase):
 
 class OnFileChangedTests(SimpleTestCase):
     def test_ignored(self):
-        views.on_file_changed(file_path=Path("/tmp/nothing"))
+        result = views.on_file_changed(file_path=Path("/tmp/nothing"))
 
         time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+        assert result is None
+        assert not views.should_reload_event.is_set()
+
+    def test_ignored_python_file_in_django_template_dir(self):
+        # Python files stored in template directories, as done by
+        # django-components, should restart the server, not reload the browser.
+        path = settings.BASE_DIR / "templates" / "django" / "component.py"
+
+        result = views.on_file_changed(file_path=path)
+
+        time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+        assert result is None
+        assert not views.should_reload_event.is_set()
+
+    def test_ignored_python_file_in_jinja_template_dir(self):
+        path = settings.BASE_DIR / "templates" / "jinja" / "component.py"
+
+        result = views.on_file_changed(file_path=path)
+
+        time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+        assert result is None
+        assert not views.should_reload_event.is_set()
+
+    def test_ignored_python_file_in_static_dir(self):
+        path = settings.BASE_DIR / "static" / "component.py"
+
+        result = views.on_file_changed(file_path=path)
+
+        time.sleep(views.RELOAD_DEBOUNCE_TIME * 1.1)
+        assert result is None
         assert not views.should_reload_event.is_set()
 
     def test_django_template(self):

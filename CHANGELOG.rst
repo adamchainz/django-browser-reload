@@ -5,6 +5,12 @@ Changelog
 Unreleased
 ----------
 
+* Fix the development server to restart when a Python file within a template or static directory changes.
+  Previously such a change only reloaded the browser, leaving the server running stale code.
+  This affected packages that store Python files alongside templates and static assets, such as django-components.
+
+  `Issue #224 <https://github.com/adamchainz/django-browser-reload/issues/224>`__.
+
 * Support Python 3.15.
 
 * Add Django 6.1 support.

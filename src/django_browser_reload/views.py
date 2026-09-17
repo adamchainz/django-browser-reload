@@ -102,6 +102,14 @@ def on_autoreload_started(*, sender: BaseReloader, **kwargs: Any) -> None:
 def on_file_changed(*, file_path: Path, **kwargs: Any) -> bool | None:
     # Returning True tells Django *not* to reload
 
+    # Python files are never templates or static assets, even when they are
+    # stored in template or static directories, as done by django-components.
+    # Ignore them so that Django restarts the development server, which reloads
+    # the browser through the version ID. Django's own template autoreloading
+    # skips Python files in the same way.
+    if file_path.suffix == ".py":
+        return None
+
     file_parents = file_path.parents
 
     # Django Templates
