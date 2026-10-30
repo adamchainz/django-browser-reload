@@ -1,0 +1,68 @@
+ci:
+  autoupdate_schedule: monthly
+
+default_language_version:
+  python: python3.14
+
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c  # frozen: v6.0.0
+  hooks:
+  - id: check-added-large-files
+  - id: check-case-conflict
+  - id: check-json
+  - id: check-merge-conflict
+  - id: check-symlinks
+  - id: check-toml
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+- repo: https://github.com/crate-ci/typos
+  rev: dd369349b73c245acd4dd4154a4bdf771d052150  # frozen: typos-dict-v0.14.2
+  hooks:
+  - id: typos
+- repo: https://github.com/tox-dev/pyproject-fmt
+  rev: a72ae8edd6eeddb9d942168912362945651212f8  # frozen: v2.30.1
+  hooks:
+  - id: pyproject-fmt
+- repo: https://github.com/tox-dev/tox-ini-fmt
+  rev: 241ced4140307006cfd8b2b9ccfd43b1139cfe4a  # frozen: 1.9.0
+  hooks:
+  - id: tox-ini-fmt
+- repo: https://github.com/standard/standard
+  rev: 6269588ae7d5d3bd6c4f7a2044436b95a6366b06  # frozen: v17.1.2
+  hooks:
+    - id: standard
+      args:
+      - --env=browser
+- repo: https://github.com/rstcheck/rstcheck
+  rev: 27a8027d6c6df787891a01b76e8298bac493fb58  # frozen: v6.3.0
+  hooks:
+  - id: rstcheck
+    additional_dependencies:
+    - tomli==2.0.1
+- repo: https://github.com/adamchainz/django-upgrade
+  rev: 5a815b88d9286ba45b8c1a4b56e695ff5645c65e  # frozen: 1.33.0
+  hooks:
+  - id: django-upgrade
+- repo: https://github.com/adamchainz/blacken-docs
+  rev: dda8db18cfc68df532abf33b185ecd12d5b7b326  # frozen: 1.20.0
+  hooks:
+  - id: blacken-docs
+    additional_dependencies:
+    - black==25.1.0
+- repo: https://github.com/astral-sh/ruff-pre-commit
+  rev: f12be1ebaa5351c1fc76472de98db2c3446c8253  # frozen: v0.16.10
+  hooks:
+    - id: ruff-check
+      args: [ --fix ]
+    - id: ruff-format
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: 2834ec6639549dd6796205c8f011dedcd587288b  # frozen: v2.4.0
+  hooks:
+  - id: mypy
+    additional_dependencies:
+    - django-stubs==6.1.0
+- repo: https://github.com/adamchainz/djade-pre-commit
+  rev: 52a7ce253113456c2a1113186a4a19b15c8b68af  # frozen: 1.9.0
+  hooks:
+  - id: djade
