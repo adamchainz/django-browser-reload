@@ -22,7 +22,7 @@ django-launch-editor
 
 Open files from Django’s debug error page in your editor.
 
-Adds “Open in editor” buttons to the traceback on Django’s debug error page, which open the file at the right line in your editor, using `launch-editor-py <https://github.com/adamchainz/launch-editor-py>`__.
+Makes the file locations on Django’s debug error page, like “/path/to/views.py, line 8”, into links that open the file at that line in your editor, using `launch-editor-py <https://github.com/adamchainz/launch-editor-py>`__.
 
 ----
 
@@ -70,7 +70,7 @@ Installation
    You can use another prefix if required.
 
 That’s it! 🎉
-Trigger an error with ``DEBUG = True``, and each traceback frame, plus any template error, will have an “Open in editor” button.
+Trigger an error with ``DEBUG = True``, and click the file location of any traceback frame, or template error, to open it in your editor.
 
 Editor selection
 ----------------
@@ -92,18 +92,18 @@ Security
 
 Opening files runs a program on the server, so the package takes several precautions:
 
-* Buttons are only added, and the view only works, when ``DEBUG`` is ``True``.
+* Links are only added, and the view only works, when ``DEBUG`` is ``True``.
   Otherwise, the view returns a 404.
-  Buttons are never added to error emails.
+  Links are never added to error emails.
 
 * The view only accepts ``POST`` requests, with CSRF protection, even if ``CsrfViewMiddleware`` is not installed.
 
 * The view doesn’t accept arbitrary file paths.
-  Instead, each button carries a token, signed with your ``SECRET_KEY``, for a file and line that appeared on a debug page.
+  Instead, each link carries a token, signed with your ``SECRET_KEY``, for a file and line that appeared on a debug page.
   Tokens are only made for files that exist, and expire after 24 hours.
 
 How it works
 ------------
 
 ``LaunchEditorExceptionReporter`` extends Django’s ``ExceptionReporter`` to add a small script to the HTML debug page, along with signed tokens for each traceback frame.
-The script adds buttons that ``POST`` a token to the view, which checks it and calls ``launch_editor()``.
+The script turns file locations into buttons, styled as links, that ``POST`` a token to the view, which checks it and calls ``launch_editor()``.

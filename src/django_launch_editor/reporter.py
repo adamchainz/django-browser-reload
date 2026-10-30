@@ -16,7 +16,14 @@ from django_launch_editor.tokens import make_token
 SCRIPT = (Path(__file__).parent / "launch-editor.js").read_text(encoding="utf-8")
 
 STYLE = """
-button.django-launch-editor { font-size: 85%; padding: 0 0.4em; cursor: pointer; }
+button.django-launch-editor {
+  background: none; border: none; padding: 0; margin: 0;
+  font: inherit; color: inherit; text-align: inherit;
+  text-decoration: underline; cursor: pointer;
+}
+button.django-launch-editor:hover { text-decoration-thickness: 2px; }
+button.django-launch-editor .fname { user-select: text; }
+button.django-launch-editor:disabled { cursor: progress; }
 .django-launch-editor-status { color: #666; }
 .django-launch-editor-status.error { color: #c00; }
 """
@@ -28,11 +35,14 @@ class LaunchEditorExceptionReporter(ExceptionReporter):
     page.
     """
 
+    # Copied from Django, see tests/test_upstream.py.
     def get_traceback_html(self) -> SafeString:
+        """Return HTML version of debug 500 HTTP error page."""
         data = self.get_traceback_data()
         with self.html_template_path.open(encoding="utf-8") as fh:
             t = DEBUG_ENGINE.from_string(fh.read())
-        html = t.render(Context(data, use_l10n=False))
+        c = Context(data, use_l10n=False)
+        html = t.render(c)
 
         extra = self.get_launch_editor_html(data)
         if extra:
