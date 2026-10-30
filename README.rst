@@ -24,6 +24,15 @@ Open files from Django’s debug error page in your editor.
 
 Makes the file locations on Django’s debug error page, like “/path/to/views.py, line 8”, into links that open the file at that line in your editor, using `launch-editor-py <https://github.com/adamchainz/launch-editor-py>`__.
 
+.. Generated with:
+.. Clone the repository into a directory called django-launch-editor, so paths in the screenshot use that name, then:
+.. cd example && uv run manage.py runserver
+.. …then in another tab:
+.. uvx shot-scraper --width 1280 --height 720 --retina --wait 1000 http://127.0.0.1:8000/ -o screenshot.png
+
+.. figure:: https://raw.githubusercontent.com/adamchainz/django-launch-editor/main/screenshot.png
+   :alt: django-launch-editor screenshot
+
 ----
 
 **Improve your Django and Git skills** with `my books <https://adamj.eu/books/>`__.
@@ -102,6 +111,15 @@ Opening files runs a program on the server, so the package takes several precaut
 * The view doesn’t accept arbitrary file paths.
   Instead, each link carries a token, signed with your ``SECRET_KEY``, for a file and line that appeared on a debug page.
   Tokens are only made for files that exist, and expire after 24 hours.
+
+Example project
+---------------
+
+To try django-launch-editor, there is an example project included in the repository.
+Open |the example directory|__, follow the instructions in its README, and try it out.
+
+.. |the example directory| replace:: the ``example/`` directory
+__ https://github.com/adamchainz/django-launch-editor/tree/main/example
 
 How it works
 ------------
