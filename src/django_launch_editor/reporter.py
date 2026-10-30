@@ -4,7 +4,6 @@ from pathlib import Path
 from typing import Any
 
 from django.conf import settings
-from django.middleware.csrf import get_token
 from django.template import Context
 from django.urls import NoReverseMatch, reverse
 from django.utils.html import json_script
@@ -64,7 +63,7 @@ class LaunchEditorExceptionReporter(ExceptionReporter):
 
         frames = [
             make_token(frame["filename"], frame["lineno"])
-            if frame["tb"] is not None and isinstance(frame["lineno"], int)
+            if frame["tb"] is not None
             else None
             for frame in data["frames"]
         ]
@@ -77,7 +76,6 @@ class LaunchEditorExceptionReporter(ExceptionReporter):
 
         config = {
             "url": url,
-            "csrfToken": get_token(self.request),
             "frames": frames,
             "template": template,
         }

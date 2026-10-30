@@ -17,14 +17,17 @@
       const response = await fetch(data.url, {
         method: 'POST',
         body,
-        headers: { 'X-CSRFToken': data.csrfToken },
         mode: 'same-origin',
         credentials: 'same-origin'
       })
       if (!response.ok) {
         error = `Request failed with status ${response.status}.`
-        if (response.headers.get('Content-Type') === 'application/json') {
-          error = (await response.json()).error
+        const contentType = response.headers.get('Content-Type') ?? ''
+        if (contentType.startsWith('application/json')) {
+          const json = await response.json()
+          if (typeof json.error === 'string') {
+            error = json.error
+          }
         }
       }
     } catch (exc) {

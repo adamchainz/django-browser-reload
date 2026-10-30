@@ -96,7 +96,8 @@ Opening files runs a program on the server, so the package takes several precaut
   Otherwise, the view returns a 404.
   Links are never added to error emails.
 
-* The view only accepts ``POST`` requests, with CSRF protection, even if ``CsrfViewMiddleware`` is not installed.
+* The view only accepts ``POST`` requests from pages on the same origin, checked with the ``Sec-Fetch-Site`` or ``Origin`` headers that browsers send.
+  This blocks cross-site request forgery without relying on ``CsrfViewMiddleware``’s cookie, which may not be set on the error page.
 
 * The view doesn’t accept arbitrary file paths.
   Instead, each link carries a token, signed with your ``SECRET_KEY``, for a file and line that appeared on a debug page.

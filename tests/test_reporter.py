@@ -46,17 +46,11 @@ class LaunchEditorExceptionReporterTests(SimpleTestCase):
         assert "<script>(function () {" in html
         config = get_config(html)
         assert config["url"] == "/__launch_editor__/launch/"
-        assert config["csrfToken"]
         assert config["template"] is None
         assert len(config["frames"]) >= 2
         filename, line = load_token(config["frames"][-1])
         assert filename == tests.views.__file__
         assert line == 8
-
-    def test_csrf_cookie_set(self):
-        response = self.client.get("/error/")
-
-        assert "csrftoken" in response.cookies
 
     def test_template_error(self):
         response = self.client.get("/template-error/")
